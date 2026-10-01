@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FGS C1 Online Exam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1F2B4D; --ink-soft:#4A5573; --line:#C9CEDA;
+  --omr:#C8295E; --omr-soft:#F7D6E2; --sheet:#FDF3F7;
+  --desk:#DCE0E8; --paper:#FFFFFF; --mist:#F4F5F8;
+  --ok:#2C7A57; --ok-soft:#DDF0E6; --bad:#B3261E; --bad-soft:#F8E0DE; --warn:#9A5B00; --warn-soft:#FBEFD9;
+  --sans:"Atkinson Hyperlegible","Segoe UI",Arial,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --r-sm:4px; --r-md:8px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);font-size:16px;line-height:1.5}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--omr);outline-offset:2px}
+[hidden]{display:none !important}
+.btn{border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);padding:.55rem 1.1rem;border-radius:var(--r-sm);font-weight:700}
+.btn:hover{background:#EEF0F5}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.primary:hover{background:#2E3D66}
+.btn.omr{background:var(--omr);border-color:var(--omr);color:#fff}
+.btn.omr:hover{background:#A91F4D}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.small{padding:.3rem .7rem;font-size:.9rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{background:none;border:0;color:inherit;text-decoration:underline;padding:0}
+.field{display:flex;flex-direction:column;gap:.3rem;margin-bottom:1rem}
+.field label{font-weight:700;font-size:.92rem}
+.input{border:1.5px solid var(--line);border-radius:var(--r-sm);padding:.6rem .7rem;background:#fff;width:100%}
+.input:focus{border-color:var(--ink);outline:none}
+.err{color:var(--bad);font-weight:700;min-height:1.4em;margin:.4rem 0 0}
+.muted{color:var(--ink-soft)}
+.pill{display:inline-block;padding:.12rem .65rem;border-radius:999px;font-weight:700;font-size:.82rem;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.off{background:#E9ECF2;color:var(--ink-soft)}
+
+/* ---------- login ---------- */
+#login{min-height:100%;display:grid;grid-template-columns:1.1fr 1fr}
+.land-left{background:var(--ink);color:#fff;padding:clamp(2rem,6vw,5rem);display:flex;flex-direction:column;justify-content:space-between;gap:2rem}
+.land-title{font-size:clamp(2.3rem,5vw,4.2rem);letter-spacing:-.01em;max-width:12ch}
+.skills{display:grid;grid-template-columns:repeat(4,auto);gap:1.4rem;justify-content:start}
+.skills b{display:block;font-family:var(--serif);font-size:1.3rem}
+.skills span{font-size:.85rem;opacity:.8}
+.land-right{background:var(--sheet);display:flex;align-items:center;justify-content:center;padding:2rem}
+.candidate{width:100%;max-width:440px;background:#fff;border:2px solid var(--omr);border-radius:var(--r-md);padding:1.6rem}
+.candidate h2{font-size:1.5rem;color:var(--omr)}
+.candidate .rule{border-top:2px solid var(--omr);margin:1rem 0 1.2rem}
+.candidate .input{border-color:var(--omr-soft)}
+.candidate .input:focus{border-color:var(--omr)}
+
+/* ---------- generic page ---------- */
+.page{max-width:980px;margin:0 auto;padding:2.2rem 1.5rem 4rem}
+.page-head{display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:1rem;margin-bottom:1.5rem}
+.page-head h1{font-size:2rem}
+.page-head .who{margin-left:auto;text-align:right;color:var(--ink-soft)}
+
+/* ---------- device check ---------- */
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.check{border:1.5px solid var(--line);border-radius:var(--r-md);padding:1.1rem 1.2rem;background:#fff}
+.check h3{font-size:1.1rem;display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.check.pass{border-color:var(--ok)}
+.check.fail{border-color:var(--bad)}
+.check video{width:100%;max-width:320px;border-radius:var(--r-sm);background:#111;display:block;margin:.4rem 0}
+.meter{height:.7rem;background:#E9ECF2;border-radius:999px;overflow:hidden;margin:.5rem 0}
+.meter div{height:100%;width:0;background:var(--ok);transition:width .08s}
+.rules{background:var(--sheet);border-left:4px solid var(--omr);padding:1rem 1.2rem;margin-bottom:1.2rem}
+.rules p{margin:.3rem 0}
+.consent{display:flex;gap:.7rem;align-items:flex-start;font-weight:700;margin:1.2rem 0}
+.consent input{width:1.25rem;height:1.25rem;accent-color:var(--omr);margin-top:.2rem}
+
+/* ---------- dashboard ---------- */
+.mod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.mod{border:1.5px solid var(--line);border-radius:var(--r-md);padding:1.2rem 1.3rem;background:#fff;display:flex;flex-direction:column;gap:.5rem}
+.mod.done{border-color:var(--ok);background:#FAFDFB}
+.mod h2{font-size:1.35rem}
+.mod .meta{color:var(--ink-soft);font-size:.92rem}
+.mod .actions{margin-top:auto;padding-top:.6rem}
+.dash-foot{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-top:1.6rem;padding-top:1.2rem;border-top:1.5px solid var(--line)}
+.notice{background:var(--warn-soft);color:var(--warn);border-radius:var(--r-sm);padding:.7rem 1rem;font-weight:700;margin-bottom:1.2rem}
+.final-table{width:100%;border-collapse:collapse;margin:1rem 0}
+.final-table td,.final-table th{padding:.6rem .5rem;border-bottom:1px solid var(--line);text-align:left}
+.final-table th{font-size:.85rem;color:var(--ink-soft)}
+
+/* ---------- prepare ---------- */
+.progress{height:.7rem;background:#E9ECF2;border-radius:999px;overflow:hidden;margin:.8rem 0}
+.progress div{height:100%;width:0;background:var(--omr);transition:width .2s}
+
+/* ---------- exam ---------- */
+#exam{height:100%;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:var(--ink);color:#fff;flex-wrap:wrap}
+.topbar .mname{font-family:var(--serif);font-weight:700;font-size:1.15rem}
+.topbar .who{opacity:.85;font-size:.9rem}
+.topbar .sp{flex:1}
+.timer{font-family:var(--serif);font-size:1.45rem;font-variant-numeric:tabular-nums;padding:.05rem .7rem;border:1.5px solid rgba(255,255,255,.4);border-radius:var(--r-sm)}
+.timer.low{background:var(--omr);border-color:var(--omr)}
+.timer.frozen{background:#fff;color:var(--ink)}
+.topbar .btn{background:#fff;color:var(--ink);border-color:#fff}
+.topbar .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.selfview{width:72px;height:54px;border-radius:var(--r-sm);object-fit:cover;background:#000;border:1.5px solid rgba(255,255,255,.5)}
+.badge{display:inline-block;min-width:1.3rem;padding:0 .35rem;border-radius:999px;background:var(--omr);color:#fff;font-size:.75rem;line-height:1.3rem;text-align:center;margin-left:.3rem}
+.player{display:flex;align-items:center;gap:1rem;padding:.6rem 1rem;background:var(--sheet);border-bottom:2px solid var(--omr);flex-wrap:wrap}
+.player .phase{font-weight:700;min-width:16rem}
+.player .ptrack{flex:1;min-width:10rem;height:.6rem;background:#fff;border:1px solid var(--omr-soft);border-radius:999px;overflow:hidden}
+.player .ptrack div{height:100%;width:0;background:var(--omr)}
+.player .plays{font-size:.9rem;color:var(--omr);font-weight:700}
+.player label{font-size:.85rem;display:flex;align-items:center;gap:.4rem}
+.player input[type=range]{accent-color:var(--omr);width:6rem}
+.parttabs{display:flex;background:#fff;border-bottom:1.5px solid var(--line);overflow-x:auto;flex:none}
+.ptab{border:0;background:none;padding:.45rem .95rem;border-bottom:3px solid transparent;text-align:left;white-space:nowrap}
+.ptab b{display:block;font-size:.93rem}
+.ptab span{font-size:.78rem;color:var(--ink-soft)}
+.ptab.active{border-bottom-color:var(--omr)}
+.ptab.done span{color:var(--ok);font-weight:700}
+.ptab.live b::after{content:" ●";color:var(--omr)}
+.mobile-switch{display:none}
+.workspace{flex:1;min-height:0;display:grid;grid-template-columns:var(--split,56%) 10px 1fr}
+.reading{background:var(--desk);overflow:auto;position:relative}
+.reading-tools{position:sticky;top:0;z-index:2;display:flex;gap:.4rem;align-items:center;padding:.45rem .8rem;background:rgba(220,224,232,.95);border-bottom:1px solid var(--line)}
+.reading-tools .label{font-weight:700;margin-right:auto}
+.pages{padding:1rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.pages img{background:#fff;box-shadow:0 1px 3px rgba(31,43,77,.25);display:block;max-width:none}
+.empty{max-width:420px;margin:3rem auto;text-align:center;padding:0 1rem}
+.splitter{background:var(--line);cursor:col-resize;position:relative;touch-action:none}
+.splitter::after{content:"";position:absolute;left:3px;top:50%;width:4px;height:42px;margin-top:-21px;border-left:1.5px solid var(--ink-soft);border-right:1.5px solid var(--ink-soft)}
+.sheet{background:var(--sheet);overflow:auto;padding:1.1rem 1.4rem 5rem}
+.sheet-head{border-bottom:2px solid var(--omr);padding-bottom:.7rem;margin-bottom:.9rem}
+.sheet-head h2{font-size:1.4rem}
+.sheet-head .marks{font-size:.88rem;color:var(--omr);font-weight:700}
+.sheet-head p{margin:.4rem 0 0;font-size:.95rem}
+.qrow{display:flex;align-items:center;gap:.9rem;padding:.5rem 0;border-bottom:1px dashed var(--omr-soft)}
+.qnum{width:2.4rem;flex:none;font-family:var(--serif);font-weight:700;font-size:1.15rem;text-align:right}
+.lozenges{display:flex;gap:.4rem;flex-wrap:wrap}
+.loz{width:2.5rem;height:1.7rem;border-radius:999px;border:2px solid var(--omr);background:#fff;color:var(--omr);font-weight:700;font-size:.88rem;padding:0}
+.loz:hover{background:var(--omr-soft)}
+.loz[aria-pressed="true"],.loz[aria-pressed="true"]:hover{background:var(--omr);color:#fff}
+.qtext{flex:1;display:flex;flex-direction:column;gap:.25rem}
+.hint{font-size:.82rem;color:var(--ink-soft)}
+.hint b{color:var(--ink);letter-spacing:.04em}
+.ans{border:2px solid var(--omr-soft);border-radius:var(--r-sm);padding:.5rem .6rem;text-transform:uppercase;background:#fff;width:100%;letter-spacing:.03em}
+.ans:focus{border-color:var(--omr);outline:none}
+.ans::placeholder{text-transform:none;letter-spacing:0}
+.sheet-nav{display:flex;justify-content:space-between;margin-top:1.3rem;gap:.6rem}
+.essay{width:100%;min-height:52vh;border:2px solid var(--omr-soft);border-radius:var(--r-sm);padding:.9rem 1rem;font-family:var(--serif);font-size:1.05rem;line-height:1.7;resize:vertical;background:#fff}
+.essay:focus{border-color:var(--omr);outline:none}
+.wc{font-weight:700;margin:.4rem 0}
+.wc.under{color:var(--warn)} .wc.over{color:var(--bad)} .wc.good{color:var(--ok)}
+.choice-row{display:flex;gap:.6rem;flex-wrap:wrap;margin:.6rem 0 1rem}
+.choice-row label{border:2px solid var(--omr);border-radius:999px;padding:.3rem .9rem;font-weight:700;color:var(--omr);cursor:pointer;background:#fff}
+.choice-row input{position:absolute;opacity:0;pointer-events:none}
+.choice-row label:has(input:checked){background:var(--omr);color:#fff}
+.choice-row label:focus-within{outline:3px solid var(--omr);outline-offset:2px}
+.tasklist{list-style:none;padding:0;margin:0 0 1rem;display:flex;flex-direction:column;gap:.3rem}
+.tasklist button{width:100%;text-align:left;border:1.5px solid var(--omr-soft);background:#fff;border-radius:var(--r-sm);padding:.45rem .7rem;display:flex;justify-content:space-between;gap:.5rem}
+.tasklist button.cur{border-color:var(--omr);font-weight:700}
+.tasklist .st{font-size:.82rem;color:var(--ink-soft)}
+.tasklist .st.ok{color:var(--ok);font-weight:700}
+.taskcard{background:#fff;border:2px solid var(--omr);border-radius:var(--r-md);padding:1.1rem 1.2rem}
+.taskcard h3{font-size:1.25rem;margin-bottom:.4rem}
+.bigclock{font-family:var(--serif);font-size:3rem;font-variant-numeric:tabular-nums;line-height:1;margin:.6rem 0}
+.recdot{display:inline-block;width:.8rem;height:.8rem;border-radius:50%;background:var(--bad);margin-right:.4rem;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+audio{width:100%;margin:.5rem 0}
+
+/* ---------- results ---------- */
+.score-band{display:grid;grid-template-columns:auto 1fr;gap:2rem;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:1.4rem;margin:1rem 0 1.6rem}
+.score-big{font-family:var(--serif);font-size:clamp(3.2rem,9vw,5.5rem);line-height:.9;font-weight:700}
+.score-big small{font-size:.38em;color:var(--ink-soft);font-weight:500}
+.part-bars{display:grid;gap:.55rem}
+.pbar{display:grid;grid-template-columns:15rem 1fr 4rem;gap:.8rem;align-items:center;font-size:.92rem}
+.pbar .track{height:.7rem;background:#E9ECF2;border-radius:999px;overflow:hidden}
+.pbar .fill{height:100%;background:var(--omr)}
+.pbar .n{text-align:right;font-variant-numeric:tabular-nums}
+.rv{width:100%;border-collapse:collapse;font-size:.92rem;margin-bottom:1rem}
+.rv td,.rv th{padding:.38rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.rv th{color:var(--ink-soft);font-size:.8rem}
+.rv .ok{color:var(--ok);font-weight:700} .rv .no{color:var(--bad);font-weight:700} .rv .half{color:var(--warn);font-weight:700}
+
+/* ---------- overlays ---------- */
+.modal{position:fixed;inset:0;background:rgba(31,43,77,.6);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50}
+.modal-box{background:#fff;border-radius:var(--r-md);padding:1.6rem;width:100%;max-width:460px}
+.modal-box h3{font-size:1.35rem;margin-bottom:.6rem}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem;flex-wrap:wrap}
+#pause{position:fixed;inset:0;z-index:60;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;padding:2rem;text-align:center}
+#pause .inner{max-width:560px}
+#pause h1{font-size:clamp(2rem,5vw,3rem);margin-bottom:1rem}
+#pause .reason{display:inline-block;margin-top:1rem;background:rgba(255,255,255,.12);padding:.4rem .9rem;border-radius:var(--r-sm)}
+#pause .btn{background:#fff;color:var(--ink);border-color:#fff;margin-top:1.4rem}
+#warn{z-index:75}
+#warn .modal-box{border-top:6px solid var(--bad)}
+#chat{position:fixed;right:1rem;bottom:1rem;width:min(360px,calc(100vw - 2rem));height:min(460px,70vh);background:#fff;border:1.5px solid var(--ink);border-radius:var(--r-md);z-index:70;display:flex;flex-direction:column;box-shadow:0 8px 24px rgba(31,43,77,.25)}
+#chat header{background:var(--ink);color:#fff;padding:.6rem .9rem;display:flex;align-items:center;border-radius:6px 6px 0 0}
+#chat header b{flex:1}
+#chat header button{background:none;border:0;color:#fff;font-size:1.3rem;line-height:1}
+.msgs{flex:1;overflow:auto;padding:.8rem;display:flex;flex-direction:column;gap:.5rem;background:var(--mist)}
+.msg{max-width:85%;padding:.45rem .7rem;border-radius:var(--r-md);font-size:.93rem}
+.msg.me{align-self:flex-end;background:var(--ink);color:#fff}
+.msg.them{align-self:flex-start;background:#fff;border:1px solid var(--line)}
+.msg.warning{align-self:stretch;background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad);font-weight:700}
+.msg.broadcast{align-self:stretch;background:var(--warn-soft);color:var(--warn);font-weight:700}
+.msg time{display:block;font-size:.72rem;opacity:.7}
+.chat-in{display:flex;gap:.4rem;padding:.6rem;border-top:1px solid var(--line)}
+.chat-in input{flex:1}
+.toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.7rem 1.2rem;border-radius:var(--r-sm);z-index:90;font-weight:700;max-width:90vw}
+.toast.bc{background:var(--warn)}
+#conn{position:fixed;bottom:0;left:0;right:0;background:var(--bad);color:#fff;text-align:center;padding:.4rem;z-index:95;font-weight:700}
+#busy{position:fixed;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;z-index:80;font-weight:700;font-size:1.1rem;text-align:center;padding:1rem}
+#hiddenCam{position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;left:-10px;top:-10px}
+
+@media (max-width:860px){
+  #login{grid-template-columns:1fr}
+  .check-grid,.mod-grid{grid-template-columns:1fr}
+  .workspace{grid-template-columns:1fr}
+  .splitter{display:none}
+  .mobile-switch{display:flex;gap:.4rem;padding:.5rem;background:#fff;border-bottom:1px solid var(--line)}
+  .mobile-switch .btn{flex:1}
+  .workspace[data-view="read"] .sheet{display:none}
+  .workspace[data-view="answer"] .reading{display:none}
+  .score-band{grid-template-columns:1fr}
+  .pbar{grid-template-columns:8rem 1fr 3.5rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section id="login">
+  <div class="land-left">
+    <div style="opacity:.85">FIITJEE Global School, Vengambakkam &nbsp;|&nbsp; Department of English</div>
+    <div>
+      <h1 class="land-title">C1 Advanced Online Examination</h1>
+      <p style="max-width:44ch;opacity:.9;margin-top:1rem">Four papers, taken in any order. Each paper is saved only when you finish it, so you can complete one paper now and return later for the rest.</p>
+    </div>
+    <div class="skills">
+      <div><b>Listening</b><span>4 parts</span></div>
+      <div><b>Reading</b><span>8 parts</span></div>
+      <div><b>Writing</b><span>2 tasks</span></div>
+      <div><b>Speaking</b><span>4 parts</span></div>
+    </div>
+  </div>
+  <div class="land-right">
+    <form class="candidate" id="loginForm" autocomplete="off" novalidate>
+      <h2>Candidate details</h2>
+      <p class="muted" style="margin:0">Enter your details exactly as they appear in school records. Returning students use the same admission number to continue.</p>
+      <div class="rule"></div>
+      <div class="field"><label for="lName">Full name</label><input class="input" id="lName" maxlength="80"></div>
+      <div class="field"><label for="lAdm">Admission number</label><input class="input" id="lAdm" maxlength="30" style="text-transform:uppercase"></div>
+      <div class="field"><label for="lGrade">Grade</label>
+        <select class="input" id="lGrade">
+          <option value="">Choose your grade</option>
+          <option value="8">Grade 8</option><option value="9">Grade 9</option><option value="10">Grade 10</option>
+          <option value="11">Grade 11</option><option value="12">Grade 12</option>
+        </select>
+      </div>
+      <button class="btn omr" type="submit" style="width:100%">Sign in</button>
+      <p class="err" id="lErr" role="alert"></p>
+      <p style="text-align:center;font-size:.9rem;margin:.6rem 0 0"><a id="teacherLink" class="muted" href="#">Teacher portal</a></p>
+    </form>
+  </div>
+</section>
+
+<!-- ============ DEVICE CHECK ============ -->
+<section id="check" class="page" hidden>
+  <div class="page-head"><h1>Before you begin</h1><div class="who" id="cWho"></div></div>
+  <div class="rules">
+    <p><b>This is a supervised online examination.</b> Your teacher watches your camera and microphone live during the test. Nothing from the camera or microphone is recorded, except your answers in the Speaking paper.</p>
+    <p>Stay in full screen on this tab for the whole paper. Switching tab or window, leaving full screen, copying or pasting, using shortcut keys or connecting a second screen will pause your test immediately. Only your teacher can let you continue.</p>
+    <p>Each paper is saved only when you finish it. If you leave a paper part-way through, your answers in that paper are discarded and you must start it again.</p>
+  </div>
+  <div class="check-grid">
+    <div class="check" id="ckCam">
+      <h3><span>Camera and microphone</span> <span class="pill off" data-st>Not checked</span></h3>
+      <video id="camPreview" autoplay muted playsinline></video>
+      <div class="meter" aria-label="Microphone level"><div id="micLevel"></div></div>
+      <p class="muted" id="camMsg" style="margin:.3rem 0">Choose Allow when your browser asks. Then say a few words to test the microphone.</p>
+      <button class="btn small" id="camBtn">Turn on camera and microphone</button>
+    </div>
+    <div class="check" id="ckSpk">
+      <h3><span>Speakers or headphones</span> <span class="pill off" data-st>Not checked</span></h3>
+      <p class="muted" style="margin:.3rem 0 .8rem">You need sound for the Listening paper. Play the test sound, then confirm you heard it.</p>
+      <button class="btn small" id="spkPlay">Play test sound</button>
+      <button class="btn small" id="spkOk" disabled>I heard it</button>
+    </div>
+    <div class="check" id="ckScr">
+      <h3><span>Single screen</span> <span class="pill off" data-st>Not checked</span></h3>
+      <p class="muted" id="scrMsg" style="margin:.3rem 0 .8rem">Only one screen may be connected during the test.</p>
+      <button class="btn small" id="scrBtn">Check again</button>
+    </div>
+    <div class="check" id="ckFs">
+      <h3><span>Full screen</span> <span class="pill off" data-st>Not checked</span></h3>
+      <p class="muted" id="fsMsg" style="margin:.3rem 0 .8rem">The test runs in full screen.</p>
+      <button class="btn small" id="fsBtn">Enter full screen</button>
+    </div>
+  </div>
+  <label class="consent"><input type="checkbox" id="consent"> I understand that my teacher will watch my camera and microphone live during this test, and that my Speaking answers will be recorded and saved for marking.</label>
+  <button class="btn omr" id="checkGo" disabled>Continue to my papers</button>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section id="dash" class="page" hidden>
+  <div class="page-head"><h1 id="dTitle">Your papers</h1><div class="who" id="dWho"></div></div>
+  <div id="dNotice"></div>
+  <div id="dBody"></div>
+</section>
+
+<!-- ============ PREPARE ============ -->
+<section id="prep" class="page" hidden>
+  <div class="page-head"><h1 id="pTitle"></h1><div class="who" id="pWho"></div></div>
+  <div class="rules" id="pRules"></div>
+  <p id="pMsg" style="font-weight:700"></p>
+  <div class="progress"><div id="pBar"></div></div>
+  <p class="err" id="pErr"></p>
+  <div style="display:flex;gap:.7rem;margin-top:1rem">
+    <button class="btn" id="pBack">Back to my papers</button>
+    <button class="btn omr" id="pStart" disabled>Start now</button>
+  </div>
+</section>
+
+<!-- ============ EXAM ============ -->
+<section id="exam" hidden>
+  <div class="topbar">
+    <span class="mname" id="xName"></span>
+    <span class="who" id="xWho"></span>
+    <span class="sp"></span>
+    <video id="selfView" class="selfview" autoplay muted playsinline aria-label="Your camera"></video>
+    <span class="timer" id="timer" aria-live="off">--:--</span>
+    <button class="btn small ghost" id="xChat">Message teacher<span class="badge" id="xBadge" hidden>0</span></button>
+    <button class="btn small ghost" id="xExit">Leave paper</button>
+    <button class="btn small" id="xFinish">Finish paper</button>
+  </div>
+  <div class="player" id="player" hidden>
+    <span class="phase" id="plPhase">Preparing audio…</span>
+    <span class="plays" id="plPlays"></span>
+    <div class="ptrack" aria-hidden="true"><div id="plBar"></div></div>
+    <label>Volume <input type="range" id="plVol" min="0" max="1" step="0.05" value="1"></label>
+    <button class="btn small" id="plTap" hidden>Tap to play audio</button>
+  </div>
+  <nav class="parttabs" id="tabs" aria-label="Parts"></nav>
+  <div class="mobile-switch"><button class="btn small primary" id="mRead">Question paper</button><button class="btn small" id="mAns">Answer sheet</button></div>
+  <div class="workspace" id="ws" data-view="read">
+    <div class="reading" id="reading">
+      <div class="reading-tools">
+        <span class="label" id="readLabel"></span>
+        <button class="btn small" id="zOut" aria-label="Zoom out">−</button>
+        <button class="btn small" id="zFit">Fit width</button>
+        <button class="btn small" id="zIn" aria-label="Zoom in">+</button>
+      </div>
+      <div class="pages" id="pages"></div>
+    </div>
+    <div class="splitter" id="splitter" role="separator" aria-label="Resize"></div>
+    <div class="sheet" id="sheet"></div>
+  </div>
+</section>
+
+<!-- ============ MODULE RESULT ============ -->
+<section id="result" class="page" hidden>
+  <div class="page-head"><h1 id="rTitle"></h1><div class="who" id="rWho"></div></div>
+  <div id="rBody"></div>
+  <div style="margin-top:2rem"><button class="btn primary" id="rBack">Back to my papers</button></div>
+</section>
+
+<!-- ============ OVERLAYS ============ -->
+<div id="pause" hidden>
+  <div class="inner">
+    <h1 id="paTitle">Your test is paused</h1>
+    <p id="paText" style="font-size:1.1rem">Your teacher has been notified. Please wait.</p>
+    <div class="reason" id="paReason"></div>
+    <div><button class="btn" id="paGo" hidden>Continue the test</button></div>
+    <div><button class="btn small" id="paChat" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Message teacher</button></div>
+  </div>
+</div>
+<div class="modal" id="warn" hidden><div class="modal-box"><h3>Message from your teacher</h3><p id="warnText" style="font-weight:700"></p><div class="modal-actions"><button class="btn primary" id="warnOk">I understand</button></div></div></div>
+<div class="modal" id="confirm" hidden><div class="modal-box"><h3 id="cfTitle"></h3><p id="cfText"></p><div class="modal-actions"><button class="btn" id="cfNo">Cancel</button><button class="btn omr" id="cfYes">Confirm</button></div></div></div>
+<aside id="chat" hidden aria-label="Messages with your teacher">
+  <header><b>Messages with your teacher</b><button id="chatClose" aria-label="Close">×</button></header>
+  <div class="msgs" id="msgs"></div>
+  <form class="chat-in" id="chatForm"><input class="input" id="chatText" maxlength="500" placeholder="Type your question" autocomplete="off"><button class="btn small primary">Send</button></form>
+</aside>
+<div id="conn" hidden>Connection lost. Reconnecting… Do not close this page.</div>
+<div id="busy" hidden><span id="busyMsg">Working…</span></div>
+<video id="hiddenCam" autoplay muted playsinline></video>
+
+<script src="config.js"></script>
+<script>
+/* ================================================================ */
+/*  Helpers                                                         */
+/* ================================================================ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = ms => { const t = Math.max(0, Math.ceil(ms / 1000)); return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+const wc = t => (String(t || '').trim().match(/\S+/g) || []).length;
+const SCREENS = ['login', 'check', 'dash', 'prep', 'exam', 'result'];
+function show(id){ SCREENS.forEach(s => $('#' + s).hidden = s !== id); App.screen = id; window.scrollTo(0, 0); }
+function busy(on, msg){ $('#busy').hidden = !on; if (msg) $('#busyMsg').textContent = msg; }
+function toast(msg, cls){ const t = document.createElement('div'); t.className = 'toast ' + (cls || ''); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 4500); }
+function call(fn, args){
+  if (window.google && google.script && google.script.run) {
+    return new Promise((res, rej) => google.script.run.withSuccessHandler(res)
+      .withFailureHandler(e => rej(e instanceof Error ? e : new Error(e && e.message ? e.message : String(e))))[fn](...args));
+  }
+  const url = (window.FGS_CONFIG || {}).apiUrl || '';
+  if (!/^https?:\/\//.test(url) || /PASTE/.test(url)) return Promise.reject(new Error('The exam server address has not been set in config.js.'));
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }) })
+    .then(r => { if (!r.ok) throw new Error('Server error ' + r.status + '. Please try again.'); return r.text(); })
+    .then(t => {
+      if (/^\s*</.test(t)) throw new Error('The exam server is not public. Redeploy the Apps Script with "Who has access: Anyone".');
+      const j = JSON.parse(t); if (!j.ok) throw new Error(j.error); return j.result;
+    });
+}
+const NET = /network|simultaneous|too many|timed? ?out|server error|unavailable|internal error|failed to fetch|try again/i;
+async function api(fn, ...args){
+  for (let i = 0; ; i++) {
+    try { return await call(fn, args); }
+    catch (e) { if (i >= 4 || !NET.test(e.message)) throw e; await sleep(700 * (i + 1)); }
+  }
+}
+function confirmBox(title, text, yes, danger){
+  return new Promise(res => {
+    $('#cfTitle').textContent = title; $('#cfText').textContent = text; $('#cfYes').textContent = yes || 'Confirm';
+    $('#cfYes').className = 'btn ' + (danger ? 'danger' : 'omr');
+    $('#confirm').hidden = false;
+    $('#cfYes').onclick = () => { $('#confirm').hidden = true; res(true); };
+    $('#cfNo').onclick = () => { $('#confirm').hidden = true; res(false); };
+  });
+}
+
+/* ================================================================ */
+/*  App state                                                       */
+/* ================================================================ */
+const App = {
+  sid: null, dash: null, stream: null, screen: 'login',
+  mod: null, pages: {}, audioUrls: {}, attempt: null, state: { status: 'idle' }, offset: 0,
+  answers: {}, key: null, zoom: 0, inExam: false, finishing: false, localPaused: false, frozenMs: 0, autoFinished: false,
+  chatSince: 0, unread: 0, chatOpen: false, shownWarn: 0,
+  rtc: { pc: null, handled: null, waiting: null }, frameOn: false, pollFails: 0, fsSupported: true, checked: false
+};
+
+/* ================================================================ */
+/*  Login                                                           */
+/* ================================================================ */
+$('#teacherLink').href = 'teacher.html';
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('#lErr').textContent = '';
+  const name = $('#lName').value.trim(), adm = $('#lAdm').value.trim().toUpperCase(), grade = $('#lGrade').value;
+  if (!name) return $('#lErr').textContent = 'Enter your full name.';
+  if (!adm) return $('#lErr').textContent = 'Enter your admission number.';
+  if (!grade) return $('#lErr').textContent = 'Choose your grade.';
+  busy(true, 'Signing in…');
+  try {
+    const d = await api('studentLogin', name, adm, grade);
+    App.sid = d.sid; App.dash = d;
+    startPolling();
+    if (d.state.status === 'submitted' || d.state.status === 'cancelled') renderDash();
+    else openCheck();
+  } catch (err) { $('#lErr').textContent = err.message; }
+  busy(false);
+});
+const whoText = () => App.dash ? `${App.dash.name}, Grade ${App.dash.grade}, ${App.dash.adm}` : '';
+
+/* ================================================================ */
+/*  Device check                                                    */
+/* ================================================================ */
+const CK = { cam: false, spk: false, scr: false, fs: false };
+function setCk(id, ok, label){
+  const el = $('#' + id); el.classList.toggle('pass', ok === true); el.classList.toggle('fail', ok === false);
+  const p = el.querySelector('[data-st]'); p.className = 'pill ' + (ok === true ? 'ok' : ok === false ? 'bad' : 'off'); p.textContent = label;
+  updGo();
+}
+function updGo(){ $('#checkGo').disabled = !(CK.cam && CK.spk && CK.scr && CK.fs && $('#consent').checked); }
+function openCheck(){
+  $('#cWho').textContent = whoText();
+  show('check');
+  App.fsSupported = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (!App.fsSupported) { CK.fs = true; setCk('ckFs', true, 'Not available'); $('#fsMsg').textContent = 'Full screen is not available in this browser, so the test will run in this window. Do not leave it.'; $('#fsBtn').hidden = true; }
+  checkScreen();
+  if (App.stream) camReady();
+}
+function checkScreen(){
+  const ext = window.screen && window.screen.isExtended;
+  CK.scr = ext !== true;
+  setCk('ckScr', CK.scr, CK.scr ? 'Passed' : 'Second screen found');
+  $('#scrMsg').textContent = CK.scr ? 'Only one screen is in use.' : 'A second screen is connected. Disconnect it, then choose Check again.';
+}
+$('#scrBtn').onclick = checkScreen;
+const CAM_HELP = {
+  NotAllowedError: 'Access is blocked. Click the camera icon or padlock at the left of the address bar, set Camera and Microphone to Allow, then reload the page. On Windows also check Settings ▸ Privacy & security ▸ Camera and Microphone are On for the browser. On a Mac check System Settings ▸ Privacy & Security ▸ Camera and Microphone.',
+  NotReadableError: 'The camera or microphone is being used by another program (for example Zoom, Teams, Meet or the Camera app). Close that program, then try again.',
+  NotFoundError: 'No camera or microphone was found. Connect one, then try again.',
+  OverconstrainedError: 'The camera could not start with the requested settings. Try again.',
+  SecurityError: 'This page is not allowed to use the camera. Open the exam from the official link (it must start with https://).',
+  AbortError: 'The camera did not start. Close other programs using it and try again.'
+};
+$('#camBtn').onclick = async () => {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    CK.cam = false; setCk('ckCam', false, 'Not supported');
+    $('#camMsg').textContent = 'This browser cannot use the camera here. Use the latest Chrome or Edge and open the exam link starting with https://.';
+    return;
+  }
+  const tries = [
+    { video: { width: { ideal: 320 }, height: { ideal: 240 }, frameRate: { ideal: 15 } }, audio: { echoCancellation: true, noiseSuppression: true } },
+    { video: true, audio: true }
+  ];
+  let last = null;
+  for (const c of tries) {
+    try { App.stream = await navigator.mediaDevices.getUserMedia(c); last = null; break; }
+    catch (e) { last = e; if (e.name === 'NotAllowedError' || e.name === 'SecurityError') break; }
+  }
+  if (!last) return camReady();
+  CK.cam = false; setCk('ckCam', false, last.name === 'NotReadableError' ? 'In use' : last.name === 'NotFoundError' ? 'Not found' : 'Blocked');
+  $('#camMsg').textContent = (CAM_HELP[last.name] || 'The camera or microphone could not start (' + last.name + '). Try again.');
+  $('#camBtn').textContent = 'Try again';
+};
+let meterCtx = null;
+function camReady(){
+  const s = App.stream;
+  $('#camPreview').srcObject = s; $('#selfView').srcObject = s; $('#hiddenCam').srcObject = s;
+  s.getTracks().forEach(t => t.addEventListener('ended', () => violation('Camera or microphone turned off', t.kind + ' stopped')));
+  setCk('ckCam', null, 'Say something');
+  $('#camMsg').textContent = 'Camera is on. Now say a few words so we can hear your microphone.';
+  try {
+    meterCtx = meterCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const an = meterCtx.createAnalyser(); an.fftSize = 512;
+    meterCtx.createMediaStreamSource(s).connect(an);
+    const buf = new Uint8Array(an.fftSize);
+    const loop = () => {
+      an.getByteTimeDomainData(buf);
+      let peak = 0; for (const v of buf) peak = Math.max(peak, Math.abs(v - 128));
+      const pct = Math.min(100, peak / 64 * 100);
+      $('#micLevel').style.width = pct + '%';
+      if (!CK.cam && pct > 18) { CK.cam = true; setCk('ckCam', true, 'Passed'); $('#camMsg').textContent = 'Camera and microphone are working.'; }
+      if ($('#check').hidden === false) requestAnimationFrame(loop);
+    };
+    loop();
+  } catch (e) { CK.cam = true; setCk('ckCam', true, 'Passed'); }
+}
+$('#spkPlay').onclick = () => {
+  const ctx = meterCtx || (meterCtx = new (window.AudioContext || window.webkitAudioContext)());
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.frequency.value = 523; g.gain.value = .15; o.connect(g); g.connect(ctx.destination);
+  o.start(); o.stop(ctx.currentTime + 1.2);
+  $('#spkOk').disabled = false;
+};
+$('#spkOk').onclick = () => { CK.spk = true; setCk('ckSpk', true, 'Passed'); };
+$('#fsBtn').onclick = async () => { await enterFs(); };
+async function enterFs(){
+  if (!App.fsSupported) return true;
+  try {
+    const el = document.documentElement;
+    await (el.requestFullscreen ? el.requestFullscreen() : el.webkitRequestFullscreen());
+  } catch (e) {
+    if (!document.fullscreenElement) {
+      App.fsSupported = false; CK.fs = true; setCk('ckFs', true, 'Not available');
+      $('#fsMsg').textContent = 'Full screen is not available here, so the test will run in this window. Do not leave it.';
+      return true;
+    }
+  }
+  return !!document.fullscreenElement;
+}
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement) { CK.fs = true; setCk('ckFs', true, 'Passed'); $('#fsMsg').textContent = 'Full screen is on.'; }
+  else if (App.fsSupported && App.screen === 'check') { CK.fs = false; setCk('ckFs', null, 'Not checked'); }
+  if (!document.fullscreenElement) violation('Left full screen', 'Full screen was closed');
+});
+$('#consent').onchange = updGo;
+$('#checkGo').onclick = () => { App.checked = true; renderDash(); };
+
+/* ================================================================ */
+/*  Dashboard                                                       */
+/* ================================================================ */
+async function refreshDash(){ App.dash = await api('refreshDashboard', App.sid); renderDash(); }
+function renderDash(notice){
+  const d = App.dash;
+  $('#dWho').textContent = whoText();
+  $('#dTitle').textContent = d.title;
+  $('#dNotice').innerHTML = notice ? `<div class="notice">${esc(notice)}</div>` : '';
+  const st = d.state.status;
+  if (st === 'cancelled') {
+    $('#dBody').innerHTML = `<div class="notice" style="background:var(--bad-soft);color:var(--bad)">Your test has been cancelled by your teacher because of a breach of the examination rules. Please speak to your teacher.</div>`;
+    return show('dash');
+  }
+  if (st === 'submitted') {
+    $('#dBody').innerHTML = `<h2 style="font-size:1.4rem;margin-bottom:.4rem">Test submitted</h2>
+      <p class="muted">Thank you. Your Writing and Speaking papers are marked by your teacher. Sign in again later to see your final result.</p>
+      <table class="final-table"><thead><tr><th>Paper</th><th>Result</th></tr></thead><tbody>
+      ${d.modules.map(m => `<tr><td>${esc(m.name)}</td><td>${!m.done ? 'Not attempted' : m.pending ? '<span class="pill warn">Awaiting teacher marking</span>' : `<b>${m.score} / ${m.max}</b> (${m.percent}%)`}</td></tr>`).join('')}
+      </tbody></table>
+      ${d.overall !== '' ? `<p style="font-size:1.2rem"><b>Overall: ${d.overall}%</b> <span class="muted">(average of marked papers)</span></p>` : ''}
+      <button class="btn" onclick="signOut()">Sign out</button>`;
+    return show('dash');
+  }
+  if (!App.checked) return openCheck();
+  const doneCount = d.modules.filter(m => m.done).length;
+  $('#dBody').innerHTML = `<div class="mod-grid">${d.modules.map(m => `
+    <div class="mod ${m.done ? 'done' : ''}">
+      <h2>${esc(m.name)}</h2>
+      <div class="meta">${m.duration} minutes</div>
+      <div>${m.done ? (m.pending ? '<span class="pill ok">Completed ✓</span> <span class="pill warn">Awaiting marking</span>' : `<span class="pill ok">Completed ✓</span> <b>${m.score} / ${m.max}</b>`)
+        : m.open ? '<span class="pill off">Not started</span>' : '<span class="pill bad">Not open yet</span>'}</div>
+      <div class="actions">${m.done ? '' : `<button class="btn ${m.open ? 'omr' : ''}" data-start="${m.id}" ${m.open ? '' : 'disabled'}>Start ${esc(m.name)}</button>`}</div>
+    </div>`).join('')}</div>
+    <div class="dash-foot">
+      <button class="btn" id="dSave">${doneCount ? 'Save and exit' : 'Exit'}</button>
+      <button class="btn danger" id="dSubmit">Submit test</button>
+      <button class="btn small" id="dRefresh" style="margin-left:auto">Check for opened papers</button>
+    </div>`;
+  $$('[data-start]').forEach(b => b.onclick = () => prepare(b.dataset.start));
+  $('#dSave').onclick = async () => {
+    const ok = await confirmBox(doneCount ? 'Save and exit?' : 'Exit?', doneCount
+      ? 'Your completed papers are saved. Sign in again with the same admission number to attempt the remaining papers.'
+      : 'You have not completed any paper yet. Nothing will be saved.', doneCount ? 'Save and exit' : 'Exit');
+    if (ok) signOut();
+  };
+  $('#dSubmit').onclick = async () => {
+    const left = d.modules.filter(m => !m.done).length;
+    const ok = await confirmBox('Submit the whole test?', (left ? left + ' paper(s) not completed will be recorded as Not attempted. ' : '') + 'You cannot change anything after you submit.', 'Submit test', true);
+    if (!ok) return;
+    busy(true, 'Submitting your test…');
+    try { App.dash = await api('submitTest', App.sid); renderDash(); } catch (e) { toast(e.message); }
+    busy(false);
+  };
+  $('#dRefresh').onclick = () => refreshDash().catch(e => toast(e.message));
+  show('dash');
+}
+function signOut(){ location.reload(); }
+
+/* ================================================================ */
+/*  Prepare (preload pages and audio before the timer starts)       */
+/* ================================================================ */
+const RULES = {
+  listening: 'The audio plays automatically. Each part begins with reading time, then the recording plays twice. It cannot be paused, replayed or skipped, so stay on this page and keep your volume up.',
+  reading: 'Read the question paper on the left and mark your answers on the answer sheet on the right. Written answers must be in capital letters and correctly spelt.',
+  writing: 'Answer Question 1 and one question from Part 2. Aim for 220 to 260 words for each. Pasting text is not allowed.',
+  speaking: 'For each task you get preparation time, then your answer is recorded automatically. Speak clearly. You may record each task again only as many times as shown.'
+};
+async function prepare(m){
+  const ok = await enterFs();
+  if (App.fsSupported && !ok) return toast('Full screen is needed to start a paper.');
+  show('prep');
+  $('#pTitle').textContent = ({ listening: 'Listening', reading: 'Reading and Use of English', writing: 'Writing', speaking: 'Speaking' })[m];
+  $('#pWho').textContent = whoText();
+  $('#pRules').innerHTML = `<p>${RULES[m]}</p><p>The timer starts when you choose <b>Start now</b>. If you leave this paper before finishing it, your answers are lost and you must start it again.</p>`;
+  $('#pErr').textContent = ''; $('#pStart').disabled = true; $('#pBar').style.width = '0';
+  $('#pMsg').textContent = 'Loading the question paper…';
+  try {
+    const mod = await api('prepareModule', App.sid, m);
+    App.mod = mod; App.pages = {}; App.audioUrls = {};
+    const keys = Object.keys(mod.pageCounts).filter(k => mod.pageCounts[k] > 0);
+    const audio = (mod.audio || []).filter(a => a.chunks > 0);
+    const totalSteps = keys.length + audio.reduce((a, x) => a + x.chunks, 0);
+    let step = 0;
+    const tick = () => { step++; $('#pBar').style.width = Math.round(step / Math.max(1, totalSteps) * 100) + '%'; };
+    for (const k of keys) { App.pages[k] = await api('getPages', App.sid, m, k); tick(); }
+    if (m === 'listening') {
+      const missing = mod.audio.filter(a => !a.chunks).map(a => a.part);
+      if (missing.length) throw new Error('The audio for Part ' + missing.join(', ') + ' has not been added yet. Please tell your teacher.');
+      for (const a of audio) {
+        $('#pMsg').textContent = 'Downloading the audio for Part ' + a.part + '…';
+        const parts = [];
+        let mime = a.mime;
+        for (let i = 0; i < a.chunks; i++) {
+          const c = await api('getAudioChunk', App.sid, a.part, i);
+          const bin = atob(c.b64); const u8 = new Uint8Array(bin.length);
+          for (let j = 0; j < bin.length; j++) u8[j] = bin.charCodeAt(j);
+          parts.push(u8); mime = c.mime || mime; tick();
+        }
+        App.audioUrls[a.part] = URL.createObjectURL(new Blob(parts, { type: mime || 'audio/mpeg' }));
+        await verifyAudio(App.audioUrls[a.part], a.part);
+      }
+    }
+    $('#pBar').style.width = '100%';
+    $('#pMsg').textContent = 'Everything is loaded. You are ready to begin.';
+    $('#pStart').disabled = false;
+  } catch (e) { $('#pErr').textContent = e.message; $('#pMsg').textContent = ''; }
+}
+function verifyAudio(url, part){
+  return new Promise((res, rej) => {
+    const a = new Audio(); a.preload = 'auto';
+    a.oncanplaythrough = () => { App.audioDur = App.audioDur || {}; App.audioDur[part] = a.duration; res(); };
+    a.onerror = () => rej(new Error('The audio for Part ' + part + ' could not be played on this device. Please tell your teacher.'));
+    a.src = url; a.load();
+  });
+}
+$('#pBack').onclick = () => { cleanupModule(); renderDash(); };
+$('#pStart').onclick = async () => {
+  const ok = await enterFs();
+  if (App.fsSupported && !ok) return toast('Full screen is needed to start.');
+  busy(true, 'Starting…');
+  try {
+    if (App.mod.module === 'listening') unlockAudio();
+    const st = await api('startModule', App.sid, App.mod.module);
+    App.attempt = st.attempt; applyClock(st); App.state = st;
+    App.answers = {}; App.finishing = false; App.localPaused = false; App.autoFinished = false; App.inExam = true;
+    renderExam();
+  } catch (e) { $('#pErr').textContent = e.message; }
+  busy(false);
+};
+function cleanupModule(){
+  Object.values(App.audioUrls || {}).forEach(u => URL.revokeObjectURL(u));
+  App.audioUrls = {}; App.pages = {}; App.inExam = false;
+  if (L.el) { L.el.pause(); L.el.removeAttribute('src'); }
+  clearInterval(L.int); L.int = null;
+  if (S.rec && S.rec.state !== 'inactive') try { S.rec.stop(); } catch (e) {}
+  clearInterval(S.int); S.int = null;
+}
+
+/* ================================================================ */
+/*  Exam shell                                                      */
+/* ================================================================ */
+function applyClock(st){ App.offset = st.now - Date.now(); }
+const serverNow = () => Date.now() + App.offset;
+function remaining(){
+  if (App.localPaused || App.state.status === 'paused') return App.frozenMs;
+  return (App.state.endsAt || 0) - serverNow();
+}
+function renderExam(){
+  const m = App.mod.module;
+  $('#xName').textContent = App.mod.name; $('#xWho').textContent = whoText();
+  $('#player').hidden = m !== 'listening';
+  show('exam');
+  if (m === 'reading' || m === 'listening') { App.key = '1'; renderTabs(); openKey('1'); }
+  else if (m === 'writing') { App.key = '1'; renderTabs(); openKey('1'); }
+  else { App.key = String(App.mod.tasks[0].id); $('#tabs').innerHTML = ''; $('#tabs').hidden = true; S.init(); }
+  if (m !== 'speaking') $('#tabs').hidden = false;
+  clearInterval(App.clock); App.clock = setInterval(clockTick, 500); clockTick();
+  if (m === 'listening') Lst.start();
+}
+function clockTick(){
+  if (!App.inExam) return;
+  const r = remaining();
+  $('#timer').textContent = fmt(r);
+  $('#timer').classList.toggle('low', r <= 300000 && !App.localPaused);
+  $('#timer').classList.toggle('frozen', App.localPaused || App.state.status === 'paused');
+  if (r <= 0 && !App.finishing && !App.localPaused && App.state.status === 'in_progress' && !App.autoFinished) {
+    App.autoFinished = true; toast('Time is up. Your paper is being saved.'); finishPaper(true);
+  }
+}
+
+/* ---------- part tabs ---------- */
+function partList(){ return App.mod.module === 'writing' ? App.mod.parts.map(p => ({ part: p.part, title: p.title })) : App.mod.parts; }
+function answeredIn(p){ let n = 0; for (let q = p.from; q <= p.to; q++) if ((App.answers[q] || '').trim()) n++; return n; }
+function renderTabs(){
+  const m = App.mod.module;
+  $('#tabs').innerHTML = partList().map(p => {
+    let sub = '';
+    if (m === 'writing') { const t = p.part === 1 ? App.answers.p1 : App.answers.p2; sub = wc(t) + ' words'; }
+    else { const n = answeredIn(p), all = p.to - p.from + 1; sub = `${n} of ${all} answered`; }
+    const done = m === 'writing' ? wc(p.part === 1 ? App.answers.p1 : App.answers.p2) >= App.mod.minWords : answeredIn(p) === p.to - p.from + 1;
+    const live = m === 'listening' && Lst.curPart === p.part && Lst.phase !== 'done';
+    return `<button class="ptab ${String(p.part) === App.key ? 'active' : ''} ${done ? 'done' : ''} ${live ? 'live' : ''}" data-k="${p.part}"><b>Part ${p.part}</b><span>${sub}</span></button>`;
+  }).join('');
+  $$('#tabs .ptab').forEach(b => b.onclick = () => openKey(b.dataset.k));
+}
+function openKey(k){
+  App.key = String(k);
+  const m = App.mod.module;
+  renderTabs();
+  if (m === 'writing') { const p = App.mod.parts.find(x => String(x.part) === App.key); $('#readLabel').textContent = 'Part ' + p.part + ': ' + p.title; renderWriting(p); }
+  else { const p = App.mod.parts.find(x => String(x.part) === App.key); $('#readLabel').textContent = 'Part ' + p.part + ': ' + p.title; renderSheet(p); }
+  renderPages(App.key);
+  $('#sheet').scrollTop = 0; $('#reading').scrollTop = 0;
+}
+
+/* ---------- pages viewer ---------- */
+function renderPages(key){
+  const imgs = App.pages[key] || [];
+  $('#pages').innerHTML = imgs.length ? imgs.map((src, i) => `<img src="${src}" alt="Question paper page ${i + 1}">`).join('')
+    : `<div class="empty"><h3>No question pages for this part</h3><p class="muted">Tell your teacher using Message teacher.</p></div>`;
+  $$('#pages img').forEach(img => img.onload = applyZoom);
+  applyZoom();
+}
+function applyZoom(){
+  const avail = ($('#reading').clientWidth || window.innerWidth * .55) - 32;
+  const fit = Math.max(280, Math.min(avail, 1100));
+  $$('#pages img').forEach(img => { img.style.width = Math.round(fit * (1 + App.zoom * .2)) + 'px'; });
+}
+$('#zIn').onclick = () => { App.zoom = Math.min(App.zoom + 1, 6); applyZoom(); };
+$('#zOut').onclick = () => { App.zoom = Math.max(App.zoom - 1, -3); applyZoom(); };
+$('#zFit').onclick = () => { App.zoom = 0; applyZoom(); };
+window.addEventListener('resize', applyZoom);
+(() => {
+  const sp = $('#splitter'), ws = $('#ws'); let drag = false;
+  sp.addEventListener('pointerdown', e => { drag = true; sp.setPointerCapture(e.pointerId); });
+  sp.addEventListener('pointermove', e => { if (!drag) return; const r = ws.getBoundingClientRect(); ws.style.setProperty('--split', Math.min(75, Math.max(30, (e.clientX - r.left) / r.width * 100)) + '%'); applyZoom(); });
+  sp.addEventListener('pointerup', () => drag = false);
+})();
+$('#mRead').onclick = () => { $('#ws').dataset.view = 'read'; $('#mRead').classList.add('primary'); $('#mAns').classList.remove('primary'); applyZoom(); };
+$('#mAns').onclick = () => { $('#ws').dataset.view = 'answer'; $('#mAns').classList.add('primary'); $('#mRead').classList.remove('primary'); };
+
+/* ---------- answer sheet (Listening + Reading) ---------- */
+function renderSheet(p){
+  const idx = App.mod.parts.findIndex(x => x.part === p.part);
+  let h = `<div class="sheet-head"><h2>Part ${p.part}: ${esc(p.title)}</h2>
+    <div class="marks">Questions ${p.from}–${p.to} | ${p.marks} mark${p.marks > 1 ? 's' : ''} each${p.type === 'transform' ? ' (one mark for each half)' : ''}</div>
+    <p>${esc(p.instructions)}</p></div>`;
+  for (let q = p.from; q <= p.to; q++) {
+    const val = App.answers[q] || '';
+    const hint = (p.hints || [])[q - p.from];
+    if (p.type === 'choice') {
+      h += `<div class="qrow"><div class="qnum">${q}</div><div class="lozenges" role="group" aria-label="Question ${q}">` +
+        p.options.split('').map(o => `<button class="loz" data-q="${q}" data-o="${o}" aria-pressed="${val === o}" aria-label="Question ${q}, option ${o}">${o}</button>`).join('') + `</div></div>`;
+    } else {
+      h += `<div class="qrow"><div class="qnum">${q}</div><div class="qtext">` +
+        (hint ? `<span class="hint">${p.type === 'transform' ? 'Key word' : 'Word given'}: <b>${esc(hint)}</b></span>` : '') +
+        `<input class="ans" data-q="${q}" value="${esc(val)}" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Answer to question ${q}"
+          placeholder="${p.type === 'transform' ? '3 to 6 words' : App.mod.module === 'listening' ? 'Word or short phrase' : 'One word'}"></div></div>`;
+    }
+  }
+  h += `<div class="sheet-nav">${idx > 0 ? `<button class="btn" data-go="${App.mod.parts[idx - 1].part}">Part ${App.mod.parts[idx - 1].part}</button>` : '<span></span>'}
+    ${idx < App.mod.parts.length - 1 ? `<button class="btn primary" data-go="${App.mod.parts[idx + 1].part}">Next: Part ${App.mod.parts[idx + 1].part}</button>` : `<button class="btn omr" data-finish>Finish paper</button>`}</div>`;
+  $('#sheet').innerHTML = h;
+  $$('#sheet .loz').forEach(b => b.onclick = () => {
+    const q = b.dataset.q, o = b.dataset.o;
+    App.answers[q] = App.answers[q] === o ? '' : o;
+    $$(`#sheet .loz[data-q="${q}"]`).forEach(x => x.setAttribute('aria-pressed', String(App.answers[q] === x.dataset.o)));
+    renderTabs();
+  });
+  $$('#sheet .ans').forEach(inp => inp.oninput = () => { App.answers[inp.dataset.q] = inp.value.toUpperCase(); renderTabs(); });
+  bindSheetNav();
+}
+function bindSheetNav(){
+  $$('#sheet [data-go]').forEach(b => b.onclick = () => openKey(b.dataset.go));
+  $$('#sheet [data-finish]').forEach(b => b.onclick = () => finishPaper(false));
+}
+
+/* ---------- Writing ---------- */
+function renderWriting(p){
+  const min = App.mod.minWords, max = App.mod.maxWords;
+  const field = p.part === 1 ? 'p1' : 'p2';
+  let h = `<div class="sheet-head"><h2>Part ${p.part}: ${esc(p.title)}</h2><div class="marks">${min}–${max} words</div><p>${esc(p.instructions)}</p></div>`;
+  if (p.choices) {
+    h += `<div class="choice-row" role="radiogroup" aria-label="Choose your question">` + p.choices.map(c =>
+      `<label><input type="radio" name="wchoice" value="${esc(c.q)}" ${App.answers.choice === c.q ? 'checked' : ''}>${esc(c.label)}</label>`).join('') + `</div>`;
+  }
+  h += `<textarea class="essay" id="essay" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="sentences" aria-label="Your answer for Part ${p.part}">${esc(App.answers[field] || '')}</textarea>
+    <div class="wc" id="wcount"></div>
+    <div class="sheet-nav">${p.part === 1 ? '<span></span><button class="btn primary" data-go="2">Next: Part 2</button>' : '<button class="btn" data-go="1">Part 1</button><button class="btn omr" data-finish>Finish paper</button>'}</div>`;
+  $('#sheet').innerHTML = h;
+  const upd = () => {
+    const n = wc(App.answers[field]);
+    const el = $('#wcount'); el.textContent = n + ' words' + (n < min ? ` (aim for at least ${min})` : n > max ? ` (more than ${max})` : '');
+    el.className = 'wc ' + (n < min ? 'under' : n > max ? 'over' : 'good');
+  };
+  $('#essay').oninput = e => { App.answers[field] = e.target.value; upd(); renderTabs(); };
+  $$('input[name=wchoice]').forEach(r => r.onchange = () => { App.answers.choice = r.value; });
+  upd(); bindSheetNav();
+}
+
+/* ================================================================ */
+/*  Listening engine: reading time → play × n → next part           */
+/* ================================================================ */
+const L = { el: null, int: null };
+const Lst = {
+  seq: [], i: -1, phase: 'idle', curPart: 0, ends: 0, left: 0, playNo: 0,
+  start(){
+    const m = App.mod, plays = Math.max(1, Number(m.playsPerPart) || 2), gap = Number(m.gapSeconds) || 5;
+    this.seq = [];
+    m.parts.forEach((p, n) => {
+      this.seq.push({ t: 'read', part: p.part, secs: p.readSeconds || 30 });
+      for (let k = 1; k <= plays; k++) {
+        this.seq.push({ t: 'play', part: p.part, n: k, of: plays });
+        if (k < plays) this.seq.push({ t: 'gap', part: p.part, secs: gap });
+      }
+      if (n < m.parts.length - 1) this.seq.push({ t: 'gap', part: p.part, secs: 3, between: true });
+    });
+    this.i = -1;
+    L.el = L.el || new Audio();
+    L.el.preload = 'auto'; L.el.volume = Number($('#plVol').value);
+    L.el.onended = () => { if (this.cur() && this.cur().t === 'play') this.next(); };
+    L.el.onseeking = () => { /* no seeking: playback position is controlled by the test */ };
+    clearInterval(L.int); L.int = setInterval(() => this.tick(), 200);
+    this.next();
+  },
+  cur(){ return this.seq[this.i]; },
+  next(){
+    this.i++;
+    const s = this.cur();
+    if (!s) { this.phase = 'done'; this.curPart = 0; $('#plPhase').textContent = 'The recording has finished. Check your answers, then choose Finish paper.'; $('#plPlays').textContent = ''; $('#plBar').style.width = '100%'; renderTabs(); return; }
+    this.phase = s.t; this.curPart = s.part;
+    if (s.t === 'read') { if (App.key !== String(s.part)) openKey(s.part); }
+    if (s.t === 'read' || s.t === 'gap') { this.ends = Date.now() + s.secs * 1000; }
+    if (s.t === 'play') {
+      L.el.src = App.audioUrls[s.part]; L.el.currentTime = 0;
+      L.el.play().then(() => { $('#plTap').hidden = true; }).catch(() => { $('#plTap').hidden = false; });
+    }
+    renderTabs(); this.tick();
+  },
+  tick(){
+    const s = this.cur(); if (!s) return;
+    if (App.localPaused || App.state.status === 'paused') return;
+    if (s.t === 'read' || s.t === 'gap') {
+      const left = this.ends - Date.now();
+      $('#plPhase').textContent = s.t === 'read' ? `Part ${s.part}: reading time ${fmt(left)}. Look at the questions.`
+        : s.between ? `Part ${s.part} finished. Next part in ${fmt(left)}` : `Pause before the next play ${fmt(left)}`;
+      $('#plPlays').textContent = ''; $('#plBar').style.width = '0';
+      if (left <= 0) this.next();
+    } else if (s.t === 'play') {
+      $('#plPhase').textContent = `Part ${s.part}: now playing`;
+      $('#plPlays').textContent = `Play ${s.n} of ${s.of}`;
+      const d = L.el.duration || 1; $('#plBar').style.width = Math.min(100, L.el.currentTime / d * 100) + '%';
+    }
+  },
+  pause(){ const s = this.cur(); if (!s) return; if (s.t === 'play') L.el.pause(); else this.left = this.ends - Date.now(); },
+  resume(){ const s = this.cur(); if (!s) return; if (s.t === 'play') L.el.play().catch(() => { $('#plTap').hidden = false; }); else this.ends = Date.now() + Math.max(0, this.left); }
+};
+function unlockAudio(){ try { const a = new Audio(); a.muted = true; a.src = Object.values(App.audioUrls)[0]; a.play().then(() => a.pause()).catch(() => {}); } catch (e) {} }
+$('#plVol').oninput = e => { if (L.el) L.el.volume = Number(e.target.value); };
+$('#plTap').onclick = () => { L.el.play().then(() => $('#plTap').hidden = true).catch(() => {}); };
+
+/* ================================================================ */
+/*  Speaking engine                                                 */
+/* ================================================================ */
+const S = {
+  int: null, rec: null, chunks: [], recs: {}, used: {}, phase: 'ready', ends: 0, left: 0, task: null, meterLoop: null,
+  init(){ this.recs = {}; this.used = {}; this.phase = 'ready'; this.renderTask(App.mod.tasks[0].id); clearInterval(this.int); this.int = setInterval(() => this.tick(), 200); },
+  t(){ return App.mod.tasks.find(x => String(x.id) === String(this.task)); },
+  renderTask(id){
+    if (this.phase === 'prep' || this.phase === 'speak') return toast('Finish the current task first.');
+    this.task = String(id); App.key = this.task; this.phase = this.recs[this.task] ? 'done' : 'ready';
+    const t = this.t();
+    $('#readLabel').textContent = t.title; renderPages(this.task);
+    this.draw();
+  },
+  draw(){
+    const t = this.t(), tasks = App.mod.tasks, allowed = 1 + (Number(App.mod.rerecords) || 0), used = this.used[this.task] || 0;
+    const idx = tasks.findIndex(x => String(x.id) === this.task);
+    let body = '';
+    if (this.phase === 'ready') body = `<p class="muted">Preparation ${t.prep} s, then speaking ${t.speak} s. Recording starts automatically after preparation.</p>
+      <button class="btn omr" id="sGo">Start preparation</button> <button class="btn small" id="sTts">Read the instructions aloud</button>`;
+    if (this.phase === 'prep') body = `<p><b>Preparation time</b>. Look at the page and plan what to say.</p><div class="bigclock" id="sClock"></div>`;
+    if (this.phase === 'speak') body = `<p><span class="recdot"></span><b>Recording. Speak now.</b></p><div class="bigclock" id="sClock"></div>
+      <div class="meter"><div id="sLevel"></div></div><button class="btn small" id="sStop">Stop recording</button>`;
+    if (this.phase === 'done') body = `<p class="pill ok" style="font-size:.9rem">Recorded</p><audio controls src="${this.recs[this.task].url}"></audio>
+      ${used < allowed ? `<button class="btn small" id="sAgain">Record again (${allowed - used} left)</button>` : '<p class="muted">No more re-recordings for this task.</p>'}
+      ${idx < tasks.length - 1 ? ` <button class="btn primary" id="sNext">Next task</button>` : ` <button class="btn omr" data-finish>Finish paper</button>`}`;
+    $('#sheet').innerHTML = `<div class="sheet-head"><h2>Speaking</h2><div class="marks">${tasks.length} tasks | your voice is recorded for marking</div></div>
+      <ul class="tasklist">${tasks.map(x => `<li><button data-task="${x.id}" class="${String(x.id) === this.task ? 'cur' : ''}"><span>${esc(x.title)}</span><span class="st ${this.recs[x.id] ? 'ok' : ''}">${this.recs[x.id] ? 'Recorded ✓' : 'Not recorded'}</span></button></li>`).join('')}</ul>
+      <div class="taskcard"><h3>${esc(t.title)}</h3><p>${esc(t.instructions)}</p>${body}</div>`;
+    $$('[data-task]').forEach(b => b.onclick = () => this.renderTask(b.dataset.task));
+    $$('.taskcard audio').forEach(fixDuration);
+    if ($('#sGo')) $('#sGo').onclick = () => this.begin();
+    if ($('#sTts')) $('#sTts').onclick = () => { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(t.title + '. ' + t.instructions)); } catch (e) {} };
+    if ($('#sStop')) $('#sStop').onclick = () => this.stop();
+    if ($('#sAgain')) $('#sAgain').onclick = () => { this.phase = 'ready'; this.draw(); };
+    if ($('#sNext')) $('#sNext').onclick = () => this.renderTask(tasks[idx + 1].id);
+    bindSheetNav();
+    this.tick();
+  },
+  begin(){ const t = this.t(); this.phase = 'prep'; this.ends = Date.now() + t.prep * 1000; this.draw(); },
+  startRec(){
+    const t = this.t();
+    const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4'];
+    const type = types.find(x => window.MediaRecorder && MediaRecorder.isTypeSupported(x)) || '';
+    this.chunks = [];
+    this.rec = new MediaRecorder(new MediaStream(App.stream.getAudioTracks()), type ? { mimeType: type, audioBitsPerSecond: 32000 } : {});
+    this.rec.ondataavailable = e => { if (e.data && e.data.size) this.chunks.push(e.data); };
+    this.rec.onstop = () => {
+      const blob = new Blob(this.chunks, { type: this.rec.mimeType || type || 'audio/webm' });
+      const old = this.recs[this.task]; if (old) URL.revokeObjectURL(old.url);
+      this.recs[this.task] = { blob: blob, url: URL.createObjectURL(blob) };
+      this.used[this.task] = (this.used[this.task] || 0) + 1;
+      this.phase = 'done'; this.draw();
+    };
+    this.rec.start(1000);
+    this.phase = 'speak'; this.ends = Date.now() + t.speak * 1000; this.draw();
+    this.meter();
+  },
+  meter(){
+    try {
+      const ctx = meterCtx || (meterCtx = new (window.AudioContext || window.webkitAudioContext)());
+      if (!this.an) { this.an = ctx.createAnalyser(); this.an.fftSize = 512; ctx.createMediaStreamSource(App.stream).connect(this.an); }
+      const buf = new Uint8Array(512);
+      const loop = () => { if (this.phase !== 'speak') return; this.an.getByteTimeDomainData(buf); let pk = 0; for (const v of buf) pk = Math.max(pk, Math.abs(v - 128)); if ($('#sLevel')) $('#sLevel').style.width = Math.min(100, pk / 64 * 100) + '%'; requestAnimationFrame(loop); };
+      loop();
+    } catch (e) {}
+  },
+  stop(){ if (this.rec && this.rec.state !== 'inactive') this.rec.stop(); },
+  tick(){
+    if (App.localPaused || App.state.status === 'paused') return;
+    if (this.phase !== 'prep' && this.phase !== 'speak') return;
+    const left = this.ends - Date.now();
+    if ($('#sClock')) $('#sClock').textContent = fmt(left);
+    if (left <= 0) { if (this.phase === 'prep') this.startRec(); else this.stop(); }
+  },
+  pause(){ if (this.phase === 'prep' || this.phase === 'speak') this.left = this.ends - Date.now(); if (this.phase === 'speak' && this.rec && this.rec.state === 'recording') this.rec.pause(); },
+  resume(){ if (this.phase === 'prep' || this.phase === 'speak') this.ends = Date.now() + Math.max(0, this.left); if (this.phase === 'speak' && this.rec && this.rec.state === 'paused') this.rec.resume(); }
+};
+
+/* ================================================================ */
+/*  Finish / leave / submit                                         */
+/* ================================================================ */
+$('#xFinish').onclick = () => finishPaper(false);
+$('#xExit').onclick = async () => {
+  const ok = await confirmBox('Leave this paper?', 'Your answers in ' + App.mod.name + ' will NOT be saved. You will have to start this paper again from the beginning.', 'Leave and discard answers', true);
+  if (!ok) return;
+  busy(true, 'Leaving the paper…');
+  try { App.finishing = true; const d = await api('exitModule', App.sid); cleanupModule(); App.dash = d; clearInterval(App.clock); renderDash('You left ' + App.mod.name + '. Nothing from that paper was saved.'); }
+  catch (e) { App.finishing = false; toast(e.message); }
+  busy(false);
+};
+function unansweredInfo(){
+  const m = App.mod.module;
+  if (m === 'writing') { const miss = []; if (wc(App.answers.p1) === 0) miss.push('Part 1'); if (!App.answers.choice || wc(App.answers.p2) === 0) miss.push('Part 2'); return miss.length ? miss.join(' and ') + ' not answered. ' : ''; }
+  if (m === 'speaking') { const n = App.mod.tasks.filter(t => !S.recs[t.id]).length; return n ? n + ' task(s) not recorded. ' : ''; }
+  const total = App.mod.parts.reduce((a, p) => a + p.to - p.from + 1, 0), done = App.mod.parts.reduce((a, p) => a + answeredIn(p), 0);
+  return done < total ? (total - done) + ' of ' + total + ' questions are blank. ' : '';
+}
+async function finishPaper(auto){
+  if (App.finishing) return;
+  if (!auto) {
+    if (App.mod.module === 'speaking' && (S.phase === 'prep' || S.phase === 'speak')) return toast('Finish the current recording first.');
+    const ok = await confirmBox('Finish ' + App.mod.name + '?', unansweredInfo() + 'This paper will be saved and you cannot change it afterwards.', 'Finish and save');
+    if (!ok) return;
+  }
+  App.finishing = true;
+  if (App.mod.module === 'listening') { if (L.el) L.el.pause(); clearInterval(L.int); }
+  if (App.mod.module === 'speaking' && S.rec && S.rec.state !== 'inactive') { S.stop(); await sleep(400); }
+  busy(true, 'Saving your paper…');
+  try {
+    const payload = { attempt: App.attempt };
+    const m = App.mod.module;
+    if (m === 'listening' || m === 'reading') payload.answers = App.answers;
+    if (m === 'writing') Object.assign(payload, { p1: App.answers.p1 || '', choice: App.answers.choice || '', p2: App.answers.p2 || '' });
+    if (m === 'speaking') {
+      payload.recordings = [];
+      const ids = Object.keys(S.recs);
+      for (let i = 0; i < ids.length; i++) {
+        busy(true, `Uploading recording ${i + 1} of ${ids.length}…`);
+        const dataUrl = await blobToDataUrl(S.recs[ids[i]].blob);
+        const r = await api('uploadRecording', App.sid, App.attempt, ids[i], dataUrl);
+        payload.recordings.push({ task: ids[i], id: r.id, url: r.url, name: r.name });
+      }
+    }
+    busy(true, 'Marking your paper…');
+    const res = await api('finishModule', App.sid, m, payload);
+    clearInterval(App.clock); cleanupModule();
+    App.dash = res.dashboard;
+    renderResult(res);
+  } catch (e) {
+    App.finishing = false;
+    busy(false);
+    const retry = await confirmBox('Your paper was not saved', e.message + ' Your answers are still on this screen. Try again?', 'Try again');
+    if (retry) return finishPaper(true);
+    return;
+  }
+  busy(false);
+}
+function fixDuration(a){ a.addEventListener('loadedmetadata', function f(){ if (a.duration === Infinity) { a.currentTime = 1e101; a.addEventListener('timeupdate', function g(){ a.removeEventListener('timeupdate', g); a.currentTime = 0; }); } a.removeEventListener('loadedmetadata', f); }); }
+function blobToDataUrl(b){ return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); }); }
+function renderResult(r){
+  $('#rTitle').textContent = r.name + ': saved';
+  $('#rWho').textContent = whoText();
+  if (r.pending) {
+    $('#rBody').innerHTML = `<div class="score-band" style="grid-template-columns:1fr"><div><p class="score-big" style="font-size:2.2rem">Submitted for marking</p>
+      <p class="muted">Your teacher will mark this paper. Your result will appear on your papers page after marking.</p></div></div>`;
+  } else {
+    let h = `<div class="score-band"><div class="score-big">${r.total}<small> / ${r.max}</small><div style="font-size:.32em;font-weight:500;margin-top:.4rem">${r.percent}%</div></div>
+      <div class="part-bars">${r.parts.map(p => `<div class="pbar"><span>Part ${p.part}: ${esc(p.title)}</span><div class="track"><div class="fill" style="width:${p.max ? p.score / p.max * 100 : 0}%"></div></div><span class="n">${p.score} / ${p.max}</span></div>`).join('')}</div></div>`;
+    if (r.review) {
+      r.parts.forEach(p => {
+        h += `<h3 style="font-size:1.1rem;margin:1.2rem 0 .4rem">Part ${p.part}: ${esc(p.title)}</h3><table class="rv"><thead><tr><th>Q</th><th>Your answer</th><th>Correct answer</th><th>Marks</th></tr></thead><tbody>` +
+          r.review.filter(x => x.part === p.part).map(x => `<tr><td>${x.q}</td><td>${esc(x.given) || '<span class="muted">blank</span>'}</td><td>${esc(x.key.replace(/\s*\/\s*/g, ' / '))}</td><td class="${x.marks === x.max ? 'ok' : x.marks > 0 ? 'half' : 'no'}">${x.marks} / ${x.max}</td></tr>`).join('') + '</tbody></table>';
+      });
+    }
+    $('#rBody').innerHTML = h;
+  }
+  show('result');
+}
+$('#rBack').onclick = () => renderDash();
+
+/* ================================================================ */
+/*  Proctoring                                                      */
+/* ================================================================ */
+const proctorOn = () => App.inExam && !App.finishing && !App.localPaused && App.state.status === 'in_progress';
+function violation(type, detail){
+  if (!proctorOn()) return;
+  App.frozenMs = remaining();
+  App.localPaused = true; App.sawPaused = false;
+  App.pendingViolation = { type: type, detail: detail || '', t: Date.now() };
+  freezeModule();
+  showPause(type);
+  sendViolation();
+}
+function sendViolation(){
+  const v = App.pendingViolation; if (!v) return;
+  v.t = Date.now();
+  api('reportViolation', App.sid, v.type, v.detail).then(st => {
+    if (st) { applyClock(st); App.state = st; if (st.status === 'paused') { App.frozenMs = st.remainingMs; App.sawPaused = true; App.pendingViolation = null; } }
+  }).catch(() => {});
+}
+function freezeModule(){ if (!App.mod) return; if (App.mod.module === 'listening') Lst.pause(); if (App.mod.module === 'speaking') S.pause(); }
+function resumeModule(){ if (!App.mod) return; if (App.mod.module === 'listening') Lst.resume(); if (App.mod.module === 'speaking') S.resume(); }
+function showPause(reason){
+  $('#pause').hidden = false; $('#paGo').hidden = true;
+  $('#paTitle').textContent = 'Your test is paused';
+  $('#paText').textContent = 'Your teacher has been notified. Please wait.';
+  $('#paReason').textContent = 'Reason: ' + reason;
+}
+$('#paGo').onclick = async () => {
+  if (App.fsSupported && !document.fullscreenElement) { const ok = await enterFs(); if (!ok) return; }
+  $('#pause').hidden = true;
+  if (!App.inExam) {          // reopened during a pause: the paper restarts
+    busy(true, 'Returning to your papers…');
+    try { App.dash = await api('exitModule', App.sid); renderDash('Your teacher allowed you to continue. The paper you were in must be started again.'); } catch (e) { toast(e.message); }
+    busy(false); return;
+  }
+  App.localPaused = false; resumeModule(); clockTick();
+};
+$('#paChat').onclick = () => openChat();
+
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') violation('Switched tab or window', 'The test page was hidden'); });
+window.addEventListener('blur', () => setTimeout(() => { if (!document.hasFocus()) violation('Left the test window', 'Focus moved to another window or program'); }, 700));
+['copy', 'cut', 'paste', 'drop'].forEach(ev => document.addEventListener(ev, e => {
+  if (!App.inExam) return;
+  e.preventDefault(); violation('Copy or paste attempt', 'Tried to ' + ev);
+}, true));
+document.addEventListener('contextmenu', e => { if (!App.inExam) return; e.preventDefault(); violation('Right-click attempt', 'Context menu blocked'); }, true);
+document.addEventListener('keydown', e => {
+  if (!App.inExam) return;
+  const k = (e.key || '').toLowerCase();
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && ['c', 'v', 'x', 'a', 'p', 's', 'u'].includes(k)) { e.preventDefault(); violation('Blocked shortcut key', (e.metaKey ? 'Cmd' : 'Ctrl') + '+' + k.toUpperCase()); }
+  else if (k === 'f12' || (mod && e.shiftKey && ['i', 'j', 'c'].includes(k))) { e.preventDefault(); violation('Developer tools shortcut', k.toUpperCase()); }
+  else if (k === 'printscreen') { e.preventDefault(); violation('Screenshot key', 'PrintScreen'); }
+}, true);
+document.addEventListener('keyup', e => { if (App.inExam && (e.key || '').toLowerCase() === 'printscreen') violation('Screenshot key', 'PrintScreen'); }, true);
+let dtHits = 0;
+setInterval(() => {
+  if (!proctorOn()) { dtHits = 0; return; }
+  if (window.screen && window.screen.isExtended === true) violation('Second screen detected', 'An extended display is connected');
+  const w = window.outerWidth - window.innerWidth, h = window.outerHeight - window.innerHeight;
+  dtHits = (w > 220 || h > 330) ? dtHits + 1 : 0;
+  if (dtHits >= 2) { dtHits = 0; violation('Developer tools suspected', 'Window size changed unusually'); }
+  if (App.stream && App.stream.getTracks().some(t => t.readyState === 'ended' || !t.enabled)) violation('Camera or microphone turned off', 'A media track stopped');
+}, 2000);
+if (window.screen && 'onchange' in window.screen) window.screen.addEventListener('change', () => { if (window.screen.isExtended) violation('Second screen detected', 'A display was connected'); });
+
+/* ================================================================ */
+/*  Polling: heartbeat, state, chat, warnings, live video           */
+/* ================================================================ */
+let pollTimer = null;
+function startPolling(){ if (!pollTimer) pollLoop(); }
+async function pollLoop(){
+  const req = { fs: !!document.fullscreenElement, cam: !!(App.stream && App.stream.active), focus: document.hasFocus(),
+    chatSince: App.chatSince, rtcHandled: App.rtc.handled, rtcWaiting: App.rtc.waiting };
+  if (App.frameOn && App.stream) req.frame = grabFrame();
+  try {
+    const r = await call('poll', [App.sid, req]);
+    App.pollFails = 0; $('#conn').hidden = true;
+    handlePoll(r);
+  } catch (e) {
+    App.pollFails++;
+    if (App.pollFails >= 3) $('#conn').hidden = false;
+  }
+  pollTimer = setTimeout(pollLoop, 2500);
+}
+function handlePoll(r){
+  if (!r || r.gone) return;
+  const st = r.state; applyClock(st);
+  const prev = App.state.status;
+  App.frameOn = !!r.frameOn;
+  if (st.status === 'cancelled') {
+    App.state = st; $('#pause').hidden = true;
+    if (App.inExam) cleanupModule();
+    if (App.dash) { App.dash.state = st; renderDash(); }
+    return;
+  }
+  if (App.inExam) {
+    if ((st.status === 'idle' || st.attempt !== App.attempt) && st.status !== 'paused' && !App.finishing) {
+      App.state = st; cleanupModule(); clearInterval(App.clock);
+      toast('This paper was closed because the test was opened somewhere else.');
+      refreshDash().catch(() => {});
+      return;
+    }
+    App.state = st;
+    if (st.status === 'paused') { App.sawPaused = true; App.pendingViolation = null; }
+    if (st.status === 'in_progress' && App.pendingViolation && Date.now() - App.pendingViolation.t > 8000) sendViolation();
+    if (st.status === 'paused') { App.frozenMs = st.remainingMs; if ($('#pause').hidden) { App.localPaused = true; freezeModule(); showPause(st.pauseReason || 'Paused by the system'); } }
+    if (st.status === 'in_progress' && App.sawPaused && App.localPaused && !$('#pause').hidden && $('#paGo').hidden) {
+      $('#paTitle').textContent = 'You may continue';
+      $('#paText').textContent = 'Your teacher has checked and allowed you to continue. Your timer starts again when you choose Continue.';
+      $('#paReason').textContent = 'Time left: ' + fmt(st.endsAt - serverNow());
+      $('#paGo').hidden = false;
+      App.state.endsAt = st.endsAt;
+    }
+    
+  } else {
+    App.state = st;
+    if (st.status === 'paused' && App.screen !== 'login') { showPause(st.pauseReason || 'Paused'); }
+    if (st.status !== 'paused' && prev === 'paused' && !$('#pause').hidden) {
+      $('#paTitle').textContent = 'You may continue'; $('#paText').textContent = 'Your teacher has allowed you to continue. The paper you were in must be started again.';
+      $('#paReason').textContent = ''; $('#paGo').hidden = false;
+    }
+  }
+  (r.chat || []).forEach(m => addMsg(m, !App.chatPrimed));
+  App.chatPrimed = true;
+  if (r.warning && r.warning.t !== App.shownWarn) showWarning(r.warning);
+  if (r.rtcReq) handleRtcReq(r.rtcReq);
+  if (r.rtcAnswer && App.rtc.pc) {
+    App.rtc.pc.setRemoteDescription(JSON.parse(r.rtcAnswer.sdp)).catch(() => {});
+    App.rtc.waiting = null;
+  }
+}
+
+/* ---------- chat ---------- */
+function addMsg(m, history){
+  App.chatSince = Math.max(App.chatSince, m.t);
+  const cls = m.type === 'warning' ? 'warning' : m.type === 'broadcast' ? 'broadcast' : m.from === 'student' ? 'me' : 'them';
+  const div = document.createElement('div'); div.className = 'msg ' + cls;
+  div.innerHTML = `${m.type === 'broadcast' ? 'To all students: ' : m.type === 'warning' ? 'Warning: ' : ''}${esc(m.text)}<time>${new Date(m.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</time>`;
+  $('#msgs').appendChild(div); $('#msgs').scrollTop = 1e6;
+  if (m.from !== 'student' && !App.chatOpen && !history) { App.unread++; $('#xBadge').hidden = false; $('#xBadge').textContent = App.unread; }
+  if (m.type === 'broadcast' && !history && Date.now() - m.t < 60000) toast('From your teacher: ' + m.text, 'bc');
+}
+function openChat(){ App.chatOpen = true; App.unread = 0; $('#xBadge').hidden = true; $('#chat').hidden = false; $('#chatText').focus(); $('#msgs').scrollTop = 1e6; }
+$('#xChat').onclick = () => App.chatOpen ? ($('#chat').hidden = true, App.chatOpen = false) : openChat();
+$('#chatClose').onclick = () => { $('#chat').hidden = true; App.chatOpen = false; };
+$('#chatForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const t = $('#chatText').value.trim(); if (!t) return;
+  $('#chatText').value = '';
+  try { const m = await api('sendChat', App.sid, t); if (m) addMsg(m); } catch (err) { toast(err.message); }
+});
+function showWarning(w){
+  App.shownWarn = w.t;
+  $('#warnText').textContent = w.text; $('#warn').hidden = false;
+  $('#warnOk').onclick = () => { $('#warn').hidden = true; api('ackWarning', App.sid, w.t).catch(() => {}); };
+}
+
+/* ---------- live video for the teacher (WebRTC, nothing recorded) ---------- */
+async function handleRtcReq(rq){
+  App.rtc.handled = rq.id;
+  if (!App.stream) return;
+  try { if (App.rtc.pc) App.rtc.pc.close(); } catch (e) {}
+  const pc = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] });
+  App.stream.getTracks().forEach(t => pc.addTrack(t, App.stream));
+  App.rtc.pc = pc;
+  try {
+    const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+    await new Promise(res => { if (pc.iceGatheringState === 'complete') return res(); const to = setTimeout(res, 3000); pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(to); res(); } }); });
+    pc.getSenders().forEach(s => { if (s.track && s.track.kind === 'video') { const p = s.getParameters(); p.encodings = p.encodings && p.encodings.length ? p.encodings : [{}]; p.encodings[0].maxBitrate = 250000; s.setParameters(p).catch(() => {}); } });
+    App.rtc.waiting = rq.id;
+    await api('rtcOffer', App.sid, rq.id, JSON.stringify(pc.localDescription));
+  } catch (e) {}
+}
+function grabFrame(){
+  const v = $('#hiddenCam'); if (!v.videoWidth) return null;
+  const c = document.createElement('canvas'); c.width = 192; c.height = 144;
+  c.getContext('2d').drawImage(v, 0, 0, 192, 144);
+  return c.toDataURL('image/jpeg', .5);
+}
+window.addEventListener('beforeunload', e => { if (App.inExam && !App.finishing) { e.preventDefault(); e.returnValue = ''; } });
+</script>
+</body>
+</html>

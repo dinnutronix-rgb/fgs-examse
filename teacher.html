@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FGS Exam – Teacher Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1F2B4D; --ink-soft:#4A5573; --line:#C9CEDA;
+  --omr:#C8295E; --omr-soft:#F7D6E2; --sheet:#FDF3F7; --mist:#F4F5F8; --paper:#FFFFFF;
+  --ok:#2C7A57; --ok-soft:#DDF0E6; --bad:#B3261E; --bad-soft:#F8E0DE; --warn:#9A5B00; --warn-soft:#FBEFD9;
+  --sans:"Atkinson Hyperlegible","Segoe UI",Arial,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --r-sm:4px; --r-md:8px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--mist);font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.2;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--omr);outline-offset:2px}
+[hidden]{display:none !important}
+a{color:inherit}
+.btn{border:1.5px solid var(--ink);background:#fff;color:var(--ink);padding:.45rem 1rem;border-radius:var(--r-sm);font-weight:700}
+.btn:hover{background:#EEF0F5}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.omr{background:var(--omr);border-color:var(--omr);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.danger.fill{background:var(--bad);color:#fff}
+.btn.small{padding:.22rem .6rem;font-size:.85rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.input{border:1.5px solid var(--line);border-radius:var(--r-sm);padding:.45rem .6rem;background:#fff;width:100%}
+.input:focus{border-color:var(--ink);outline:none}
+.field{display:flex;flex-direction:column;gap:.25rem;margin-bottom:.8rem}
+.field label{font-weight:700;font-size:.88rem}
+.err{color:var(--bad);font-weight:700;min-height:1.3em}
+.muted{color:var(--ink-soft)}
+.pill{display:inline-block;padding:.1rem .6rem;border-radius:999px;font-weight:700;font-size:.78rem;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.off{background:#E9ECF2;color:var(--ink-soft)} .pill.info{background:#E3E8F5;color:var(--ink)}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chip{border:1.5px solid var(--ink);background:#fff;border-radius:999px;padding:.2rem .85rem;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+.toggle{display:inline-flex;gap:.45rem;align-items:center;font-weight:700}
+.toggle input{width:1.1rem;height:1.1rem;accent-color:var(--omr)}
+
+#loginView{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ink);padding:1rem}
+.login-card{background:#fff;border-radius:var(--r-md);padding:2rem;width:100%;max-width:380px}
+.login-card h1{font-size:1.6rem;margin-bottom:.3rem}
+
+header.top{background:var(--ink);color:#fff;padding:.8rem 1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+header.top h1{font-size:1.3rem}
+header.top .sp{flex:1}
+header.top a{color:#fff;font-size:.9rem}
+header.top .btn{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.alert-chip{background:var(--bad);color:#fff;border-radius:999px;padding:.15rem .7rem;font-weight:700;font-size:.85rem}
+nav.tabs{display:flex;gap:0;background:#fff;border-bottom:1.5px solid var(--line);overflow-x:auto;padding:0 1rem}
+.tab{border:0;background:none;padding:.65rem .9rem;border-bottom:3px solid transparent;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--omr)}
+.tab .badge{display:inline-block;min-width:1.2rem;padding:0 .3rem;border-radius:999px;background:var(--omr);color:#fff;font-size:.72rem;margin-left:.3rem;text-align:center}
+.body{max-width:1280px;margin:0 auto;padding:1.2rem}
+.panel{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);padding:1.1rem 1.2rem;margin-bottom:1rem}
+.panel h2{font-size:1.2rem;margin-bottom:.7rem}
+.row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem}
+.gradebar{display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;flex-wrap:wrap}
+.gradebar b{font-size:.9rem}
+
+/* live monitor */
+.counts{display:flex;gap:1.8rem;flex-wrap:wrap}
+.counts b{display:block;font-family:var(--serif);font-size:1.7rem;line-height:1.1}
+.counts span{font-size:.82rem;color:var(--ink-soft)}
+.paused-q{border:2px solid var(--bad);background:#FFF8F7}
+.pq{display:grid;grid-template-columns:240px 1fr;gap:1rem;padding:.9rem 0;border-bottom:1px solid var(--bad-soft)}
+.pq:last-child{border-bottom:0}
+.pq .media{background:#111;border-radius:var(--r-sm);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:#ccc;overflow:hidden;position:relative}
+.pq .media video,.pq .media img,.tile .media video,.tile .media img{width:100%;height:100%;object-fit:cover;display:block}
+.events{font-size:.82rem;margin:.4rem 0;max-height:6.5rem;overflow:auto;border-left:3px solid var(--bad-soft);padding-left:.6rem}
+.decide{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.5rem}
+.decide input.msg{flex:1;min-width:14rem}
+.decide input.pen{width:4.5rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.8rem}
+.tile{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);overflow:hidden;display:flex;flex-direction:column}
+.tile.paused{border-color:var(--bad)} .tile.gone{opacity:.65}
+.tile .media{background:#111;aspect-ratio:4/3;position:relative;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.85rem}
+.tag{position:absolute;left:.4rem;top:.4rem;background:rgba(0,0,0,.6);color:#fff;font-size:.72rem;padding:.05rem .4rem;border-radius:3px}
+.tile .info{padding:.55rem .7rem;font-size:.85rem;display:flex;flex-direction:column;gap:.2rem}
+.tile .info b{font-size:.95rem}
+.tile .ctrl{display:flex;gap:.3rem;flex-wrap:wrap;padding:0 .7rem .7rem}
+.pager{display:flex;gap:.5rem;align-items:center;margin-top:.8rem}
+
+/* chat */
+.chat-wrap{display:grid;grid-template-columns:280px 1fr;gap:1rem;min-height:520px}
+.clist{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);overflow:auto;max-height:70vh}
+.clist .g{font-size:.78rem;font-weight:700;color:var(--ink-soft);padding:.5rem .8rem;background:var(--mist)}
+.clist button{width:100%;text-align:left;border:0;border-bottom:1px solid var(--mist);background:#fff;padding:.55rem .8rem;display:flex;justify-content:space-between;gap:.4rem}
+.clist button.cur{background:var(--sheet)}
+.clist .badge{background:var(--omr);color:#fff;border-radius:999px;padding:0 .45rem;font-size:.75rem;font-weight:700}
+.conv{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);display:flex;flex-direction:column}
+.conv header{padding:.7rem 1rem;border-bottom:1px solid var(--line);font-weight:700}
+.msgs{flex:1;overflow:auto;padding:.8rem;display:flex;flex-direction:column;gap:.45rem;background:var(--mist);min-height:300px;max-height:55vh}
+.msg{max-width:80%;padding:.4rem .7rem;border-radius:var(--r-md);font-size:.92rem}
+.msg.me{align-self:flex-end;background:var(--ink);color:#fff}
+.msg.them{align-self:flex-start;background:#fff;border:1px solid var(--line)}
+.msg.warning{align-self:flex-end;background:var(--bad-soft);color:var(--bad);font-weight:700}
+.msg.broadcast{align-self:stretch;background:var(--warn-soft);color:var(--warn)}
+.msg time{display:block;font-size:.7rem;opacity:.7}
+.conv form{display:flex;gap:.4rem;padding:.6rem;border-top:1px solid var(--line);flex-wrap:wrap;align-items:center}
+
+/* tables */
+table.t{width:100%;border-collapse:collapse;font-size:.88rem}
+table.t th,table.t td{padding:.4rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.t th{font-size:.78rem;color:var(--ink-soft)}
+.wrapx{overflow-x:auto}
+details.ed{border:1.5px solid var(--line);border-radius:var(--r-md);margin-bottom:.6rem;background:#fff}
+details.ed summary{padding:.65rem .9rem;cursor:pointer;font-weight:700}
+details.ed .inner{padding:0 .9rem .9rem}
+.keyt td:first-child{width:2.6rem;font-family:var(--serif);font-weight:700}
+.thumbs{display:flex;gap:.5rem;overflow-x:auto;padding:.3rem 0}
+.thumbs figure{margin:0;flex:none;text-align:center;font-size:.75rem}
+.thumbs canvas{height:110px;width:auto;border:1px solid var(--line);display:block}
+.progress{height:.55rem;background:#E9ECF2;border-radius:999px;overflow:hidden;margin:.6rem 0}
+.progress div{height:100%;width:0;background:var(--omr);transition:width .2s}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem}
+.essay-view{white-space:pre-wrap;font-family:var(--serif);font-size:1rem;line-height:1.65;background:var(--mist);border-radius:var(--r-sm);padding:.8rem 1rem;max-height:420px;overflow:auto}
+.rub{display:grid;grid-template-columns:1fr auto;gap:.4rem .8rem;align-items:center;margin:.6rem 0}
+.qgrid{display:flex;flex-wrap:wrap;gap:.3rem}
+.qcell{width:3.1rem;text-align:center;border-radius:var(--r-sm);padding:.2rem 0;font-size:.78rem;font-weight:700}
+.bar{display:grid;grid-template-columns:14rem 1fr 3.5rem;gap:.6rem;align-items:center;font-size:.85rem;margin:.25rem 0}
+.bar .track{height:.55rem;background:#E9ECF2;border-radius:999px;overflow:hidden}
+.bar .fill{height:100%;background:var(--omr)}
+.modal{position:fixed;inset:0;background:rgba(31,43,77,.6);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:50}
+.modal-box{background:#fff;border-radius:var(--r-md);padding:1.3rem;width:100%;max-width:460px}
+.modal-box.wide{max-width:900px}
+.modal-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+.big-media{background:#111;aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden}
+.big-media video,.big-media img{width:100%;height:100%;object-fit:contain}
+.toasts{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:.4rem;align-items:center;z-index:90}
+.toast{background:var(--ink);color:#fff;padding:.6rem 1.1rem;border-radius:var(--r-sm);font-weight:700;box-shadow:0 4px 12px rgba(31,43,77,.25)}
+.toast.bad{background:var(--bad)}
+#busy{position:fixed;inset:0;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;z-index:80;font-weight:700}
+@media (max-width:900px){ .grid2,.grid4,.chat-wrap,.pq{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<section id="loginView">
+  <form class="login-card" id="loginForm" autocomplete="off">
+    <h1>Teacher portal</h1>
+    <p class="muted" style="margin-top:0">C1 Online Exam, FIITJEE Global School</p>
+    <div class="field"><label for="tId">Teacher ID</label><input class="input" id="tId" style="text-transform:uppercase"></div>
+    <div class="field"><label for="tPw">Password</label><input class="input" id="tPw" type="password"></div>
+    <p class="err" id="tErr" role="alert"></p>
+    <button class="btn primary" style="width:100%">Sign in</button>
+  </form>
+</section>
+
+<section id="app" hidden>
+  <header class="top">
+    <h1>Teacher portal</h1>
+    <span id="pausedAlert" class="alert-chip" hidden></span>
+    <span class="sp"></span>
+    <a id="sheetLink" target="_blank" rel="noopener">Google Sheet</a>
+    <a id="folderLink" target="_blank" rel="noopener">Drive folder</a>
+    <a id="studentLink" target="_blank" rel="noopener">Student site</a>
+    <button class="btn small" id="logout">Sign out</button>
+  </header>
+  <nav class="tabs" role="tablist">
+    <button class="tab" data-tab="live" aria-selected="true">Live monitor</button>
+    <button class="tab" data-tab="chat" aria-selected="false">Messages<span class="badge" id="chatBadge" hidden></span></button>
+    <button class="tab" data-tab="paper" aria-selected="false">Paper and answer keys</button>
+    <button class="tab" data-tab="pages" aria-selected="false">Question pages</button>
+    <button class="tab" data-tab="audio" aria-selected="false">Listening audio</button>
+    <button class="tab" data-tab="speaking" aria-selected="false">Speaking setup</button>
+    <button class="tab" data-tab="marking" aria-selected="false">Marking</button>
+    <button class="tab" data-tab="responses" aria-selected="false">Responses</button>
+  </nav>
+
+  <!-- LIVE -->
+  <div class="body" id="tab-live">
+    <div class="gradebar"><b>Show grade</b><div class="chips" id="monGrades"></div>
+      <label class="toggle" style="margin-left:auto"><input type="checkbox" id="autoWatch" checked> Watch every student on this page automatically</label></div>
+    <div class="panel"><div class="counts" id="counts"></div></div>
+    <div class="panel paused-q" id="pausedPanel" hidden><h2>Paused tests waiting for your decision</h2><div id="pausedList"></div></div>
+    <div class="panel">
+      <h2>Students</h2>
+      <div class="tiles" id="tiles"></div>
+      <div class="pager" id="pager"></div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="body" id="tab-chat" hidden>
+    <div class="panel">
+      <h2>Message every student</h2>
+      <form class="row" id="bcForm">
+        <select class="input" id="bcGrade" style="width:auto"></select>
+        <input class="input" id="bcText" maxlength="500" placeholder="For example: 10 minutes left in this paper" style="flex:1;min-width:16rem">
+        <label class="toggle"><input type="checkbox" id="bcWarn"> Send as a warning</label>
+        <button class="btn primary">Send to all</button>
+      </form>
+    </div>
+    <div class="chat-wrap">
+      <div class="clist" id="clist"></div>
+      <div class="conv">
+        <header id="convHead">Choose a student</header>
+        <div class="msgs" id="convMsgs"></div>
+        <form id="convForm" hidden>
+          <input class="input" id="convText" maxlength="500" placeholder="Reply to the student" style="flex:1;min-width:14rem">
+          <label class="toggle"><input type="checkbox" id="convWarn"> Warning</label>
+          <button class="btn primary">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAPER -->
+  <div class="body" id="tab-paper" hidden>
+    <div class="gradebar"><b>Grade</b><div class="chips gradeChips"></div></div>
+    <div class="panel">
+      <h2>Grade <span class="gl"></span> test settings</h2>
+      <div class="grid2">
+        <div class="field"><label for="pTitle">Test title</label><input class="input" id="pTitle"></div>
+        <div class="row" style="align-items:flex-end;padding-bottom:.8rem">
+          <label class="toggle"><input type="checkbox" id="pShow"> Show correct answers in results</label>
+          <label class="toggle"><input type="checkbox" id="pRetake"> Allow papers to be retaken</label>
+        </div>
+      </div>
+      <table class="t" id="modTable"></table>
+    </div>
+    <div class="panel"><h2>Listening answer key and timings</h2>
+      <div class="grid4" style="margin-bottom:.6rem">
+        <div class="field"><label for="lPlays">Times each recording plays</label><select class="input" id="lPlays"><option value="2">2 (upload each part once)</option><option value="1">1 (file already includes the repeat)</option></select></div>
+        <div class="field"><label for="lGap">Pause between plays (seconds)</label><input class="input" id="lGap" type="number" min="0" max="60"></div>
+      </div>
+      <div id="edListening"></div></div>
+    <div class="panel"><h2>Reading and Use of English answer key</h2>
+      <p class="muted" style="margin-top:-.3rem">Use "/" for alternatives (WITH/HAVING), brackets for optional words ((FREELANCE) JOURNALIST) and "|" to split a 2-mark answer into halves (TOOK | NO NOTICE OF THE).</p>
+      <div id="edReading"></div></div>
+    <div class="panel"><h2>Writing</h2>
+      <div class="grid4"><div class="field"><label for="wMin">Minimum words</label><input class="input" id="wMin" type="number"></div>
+      <div class="field"><label for="wMax">Maximum words</label><input class="input" id="wMax" type="number"></div></div></div>
+    <div class="panel">
+      <h2>Copy Grade <span class="gl"></span> to other grades</h2>
+      <div class="chips" id="copyGrades"></div>
+      <label class="toggle" style="margin:.7rem 0"><input type="checkbox" id="copyMedia" checked> Include question pages and audio</label>
+      <div><button class="btn" id="copyBtn">Copy to selected grades</button></div>
+    </div>
+    <div class="row" style="justify-content:flex-end;position:sticky;bottom:0;background:var(--mist);padding:.7rem 0">
+      <span class="muted" id="saveMsg"></span><button class="btn primary" id="savePaper">Save Grade <span class="gl"></span> paper</button>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div class="body" id="tab-pages" hidden>
+    <div class="gradebar"><b>Grade</b><div class="chips gradeChips"></div></div>
+    <div class="panel">
+      <h2>Upload the question paper PDF</h2>
+      <p class="muted" style="margin-top:-.3rem">Page numbers are pre-filled for C1 Advanced Mock Test 2. Answer keys, audioscripts and sample answers are on pages that are not listed, so students never see them.</p>
+      <input type="file" id="pdfFile" accept="application/pdf" class="input" style="max-width:420px">
+      <div id="pdfSetup" hidden>
+        <p id="pdfInfo" style="font-weight:700"></p>
+        <div class="thumbs" id="thumbs"></div>
+        <div id="mapEd"></div>
+        <h3 style="font-size:1rem;margin:1rem 0 .4rem">Use these pages for</h3>
+        <div class="chips" id="upGrades"></div>
+        <div class="progress" id="upProg" hidden><div></div></div>
+        <p class="muted" id="upMsg"></p>
+        <button class="btn omr" id="upBtn">Upload pages</button>
+      </div>
+    </div>
+    <div class="panel"><h2>Pages in use for Grade <span class="gl"></span></h2><div class="wrapx"><table class="t" id="pageStatus"></table></div></div>
+    <div class="panel" id="prevPanel" hidden><h2 id="prevTitle"></h2><div id="prevImgs"></div></div>
+  </div>
+
+  <!-- AUDIO -->
+  <div class="body" id="tab-audio" hidden>
+    <div class="gradebar"><b>Grade</b><div class="chips gradeChips"></div></div>
+    <div class="panel">
+      <h2>Listening audio for Grade <span class="gl"></span></h2>
+      <p class="muted" style="margin-top:-.3rem">Add one MP3 for each part. Students download the whole file before the paper starts, so playback cannot stutter. Apply to:</p>
+      <div class="chips" id="auGrades" style="margin-bottom:.8rem"></div>
+      <div id="audioRows"></div>
+    </div>
+  </div>
+
+  <!-- SPEAKING -->
+  <div class="body" id="tab-speaking" hidden>
+    <div class="gradebar"><b>Grade</b><div class="chips gradeChips"></div></div>
+    <div class="panel">
+      <h2>Speaking tasks for Grade <span class="gl"></span></h2>
+      <div class="grid4"><div class="field"><label for="spRe">Re-recordings allowed per task</label><input class="input" id="spRe" type="number" min="0" max="5"></div></div>
+      <div id="spTasks"></div>
+      <div class="row" style="justify-content:flex-end"><button class="btn primary" id="saveSpeaking">Save speaking tasks</button></div>
+    </div>
+  </div>
+
+  <!-- MARKING -->
+  <div class="body" id="tab-marking" hidden>
+    <div class="gradebar"><b>Grade</b><div class="chips gradeChips"></div><button class="btn small" id="markRefresh" style="margin-left:auto">Refresh</button></div>
+    <div class="grid2" style="grid-template-columns:360px 1fr">
+      <div class="panel"><h2>Submissions</h2><div id="markList"></div></div>
+      <div class="panel" id="markPanel"><p class="muted">Choose a submission to mark.</p></div>
+    </div>
+  </div>
+
+  <!-- RESPONSES -->
+  <div class="body" id="tab-responses" hidden>
+    <div class="gradebar"><b>Grade</b><div class="chips" id="respGrades"></div><button class="btn small" id="respRefresh" style="margin-left:auto">Refresh</button></div>
+    <div class="panel"><div class="counts" id="respStats"></div></div>
+    <div class="panel"><h2>Students</h2><div class="wrapx"><table class="t" id="respTable"></table></div></div>
+    <div class="grid2">
+      <div class="panel"><h2>Listening analysis</h2><div id="anaL"></div></div>
+      <div class="panel"><h2>Reading and Use of English analysis</h2><div id="anaR"></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="bigModal" hidden><div class="modal-box wide"><div class="row" style="margin-bottom:.6rem"><h3 id="bigTitle" style="flex:1"></h3><button class="btn small" id="bigSound">Sound on</button><button class="btn small" id="bigClose">Close</button></div><div class="big-media" id="bigMedia"></div></div></div>
+<div class="modal" id="confirm" hidden><div class="modal-box"><h3 id="cfTitle"></h3><p id="cfText"></p><div class="modal-actions"><button class="btn" id="cfNo">Cancel</button><button class="btn danger fill" id="cfYes">Confirm</button></div></div></div>
+<div id="busy" hidden><span id="busyMsg">Working…</span></div>
+
+<script src="config.js"></script>
+<script>
+/* ============================ helpers ============================ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = ms => { const t = Math.max(0, Math.ceil(ms / 1000)); return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+const wc = t => (String(t || '').trim().match(/\S+/g) || []).length;
+const MOD = { listening: 'Listening', reading: 'Reading and Use of English', writing: 'Writing', speaking: 'Speaking' };
+function call(fn, args){
+  if (window.google && google.script && google.script.run) {
+    return new Promise((res, rej) => google.script.run.withSuccessHandler(res)
+      .withFailureHandler(e => rej(e instanceof Error ? e : new Error(e && e.message ? e.message : String(e))))[fn](...args));
+  }
+  const url = (window.FGS_CONFIG || {}).apiUrl || '';
+  if (!/^https?:\/\//.test(url) || /PASTE/.test(url)) return Promise.reject(new Error('The exam server address has not been set in config.js.'));
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }) })
+    .then(r => { if (!r.ok) throw new Error('Server error ' + r.status + '. Please try again.'); return r.text(); })
+    .then(t => {
+      if (/^\s*</.test(t)) throw new Error('The exam server is not public. Redeploy the Apps Script with "Who has access: Anyone".');
+      const j = JSON.parse(t); if (!j.ok) throw new Error(j.error); return j.result;
+    });
+}
+const NET = /network|simultaneous|too many|timed? ?out|server error|unavailable|internal error|failed to fetch|try again/i;
+async function api(fn, ...args){
+  for (let i = 0; ; i++) {
+    try { return await call(fn, [T.token].concat(args)); }
+    catch (e) {
+      if (/session has expired/i.test(e.message)) { signOut(e.message); throw e; }
+      if (i >= 3 || !NET.test(e.message)) throw e; await sleep(700 * (i + 1));
+    }
+  }
+}
+function fixDuration(a){ a.addEventListener('loadedmetadata', function f(){ if (a.duration === Infinity) { a.currentTime = 1e101; a.addEventListener('timeupdate', function g(){ a.removeEventListener('timeupdate', g); a.currentTime = 0; }); } a.removeEventListener('loadedmetadata', f); }); }
+function busy(on, msg){ $('#busy').hidden = !on; if (msg) $('#busyMsg').textContent = msg; }
+function toast(msg, bad){ let box = $('.toasts'); if (!box) { box = document.createElement('div'); box.className = 'toasts'; box.setAttribute('role', 'status'); document.body.appendChild(box); } const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.textContent = msg; box.appendChild(t); setTimeout(() => t.remove(), 3500); }
+async function guard(fn, msg){ busy(true, msg || 'Working…'); try { return await fn(); } catch (e) { toast(e.message, true); } finally { busy(false); } }
+function confirmBox(title, text, yes){ return new Promise(res => { $('#cfTitle').textContent = title; $('#cfText').textContent = text; $('#cfYes').textContent = yes || 'Confirm'; $('#confirm').hidden = false; $('#cfYes').onclick = () => { $('#confirm').hidden = true; res(true); }; $('#cfNo').onclick = () => { $('#confirm').hidden = true; res(false); }; }); }
+function store(k, v){ try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch (e) {} }
+function fromStore(k){ try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+
+const T = { token: null, grades: ['8','9','10','11','12'], grade: '8', monGrade: 'all', paper: null, rubric: null, bandMax: 5,
+  sessions: [], now: 0, offset: 0, watch: {}, page: 0, perPage: 12, tab: 'live', lastRead: {}, chatSid: null, chatLastT: 0, knownPaused: new Set(), pdf: null };
+
+/* ============================ login ============================ */
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault(); $('#tErr').textContent = '';
+  busy(true, 'Signing in…');
+  try { const r = await call('teacherLogin', [$('#tId').value, $('#tPw').value]); $('#tPw').value = ''; start(r); }
+  catch (err) { $('#tErr').textContent = err.message; }
+  busy(false);
+});
+function start(r){
+  T.token = r.token; T.grades = r.grades; T.rubric = r.rubric; T.bandMax = r.bandMax;
+  store('fgs_tok', JSON.stringify(r));
+  $('#sheetLink').href = r.sheetUrl; $('#folderLink').href = r.folderUrl; $('#studentLink').href = 'index.html';
+  $('#loginView').hidden = true; $('#app').hidden = false;
+  buildChrome(); setTab('live'); loadGrade('8'); pollLoop();
+}
+function signOut(msg){ store('fgs_tok', null); T.token = null; Object.keys(T.watch).forEach(stopWatch); $('#app').hidden = true; $('#loginView').hidden = false; if (msg) $('#tErr').textContent = msg; }
+$('#logout').onclick = () => signOut();
+(() => { const s = fromStore('fgs_tok'); if (s) { try { start(JSON.parse(s)); } catch (e) {} } })();
+
+function buildChrome(){
+  $('#monGrades').innerHTML = ['all'].concat(T.grades).map(g => `<button class="chip" data-g="${g}" aria-pressed="${g === T.monGrade}">${g === 'all' ? 'All' : g}</button>`).join('');
+  $$('#monGrades .chip').forEach(c => c.onclick = () => { T.monGrade = c.dataset.g; T.page = 0; $$('#monGrades .chip').forEach(x => x.setAttribute('aria-pressed', String(x === c))); renderLive(); });
+  $$('.gradeChips').forEach(box => { box.innerHTML = T.grades.map(g => `<button class="chip" data-g="${g}">${g}</button>`).join(''); });
+  $$('.gradeChips .chip').forEach(c => c.onclick = () => loadGrade(c.dataset.g));
+  $('#respGrades').innerHTML = ['all'].concat(T.grades).map(g => `<button class="chip" data-g="${g}">${g === 'all' ? 'All' : g}</button>`).join('');
+  $$('#respGrades .chip').forEach(c => c.onclick = () => { T.respGrade = c.dataset.g; loadResponses(); });
+  $('#bcGrade').innerHTML = '<option value="all">All grades</option>' + T.grades.map(g => `<option value="${g}">Grade ${g}</option>`).join('');
+  $$('.tab').forEach(t => t.onclick = () => setTab(t.dataset.tab));
+}
+function setTab(tab){
+  T.tab = tab;
+  $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === tab)));
+  ['live', 'chat', 'paper', 'pages', 'audio', 'speaking', 'marking', 'responses'].forEach(x => $('#tab-' + x).hidden = x !== tab);
+  if (tab === 'marking') loadMarking();
+  if (tab === 'responses') { T.respGrade = T.respGrade || T.grade; loadResponses(); }
+  if (tab === 'chat') renderChatList();
+}
+async function loadGrade(g){
+  T.grade = g;
+  $$('.gradeChips .chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.g === g)));
+  $$('.gl').forEach(x => x.textContent = g);
+  await guard(async () => {
+    T.paper = await api('tGetPaper', g);
+    renderPaper(); renderPageStatus(); renderAudio(); renderSpeaking(); renderPickers();
+    if (T.tab === 'marking') loadMarking();
+  }, 'Loading Grade ' + g + '…');
+}
+function renderPickers(){
+  const others = T.grades.filter(g => g !== T.grade);
+  $('#copyGrades').innerHTML = others.map(g => `<button class="chip" data-g="${g}" aria-pressed="false">Grade ${g}</button>`).join('');
+  ['#upGrades', '#auGrades'].forEach(id => { $(id).innerHTML = T.grades.map(g => `<button class="chip" data-g="${g}" aria-pressed="${g === T.grade}">Grade ${g}</button>`).join(''); });
+  $$('#copyGrades .chip, #upGrades .chip, #auGrades .chip').forEach(c => c.onclick = () => c.setAttribute('aria-pressed', String(c.getAttribute('aria-pressed') !== 'true')));
+}
+const picked = sel => $$(sel + ' .chip').filter(c => c.getAttribute('aria-pressed') === 'true').map(c => c.dataset.g);
+
+/* ============================ polling ============================ */
+let pollT = null;
+async function pollLoop(){
+  if (!T.token) return;
+  const offers = Object.keys(T.watch).filter(s => T.watch[s].state === 'connecting' && !T.watch[s].pc);
+  const frames = Object.keys(T.watch).filter(s => T.watch[s].state === 'fallback');
+  try {
+    const r = await call('tPoll', [T.token, { grade: 'all', offers: offers, frames: frames }]);
+    T.now = r.now; T.offset = r.now - Date.now(); T.sessions = r.sessions;
+    Object.keys(r.offers).forEach(s => onOffer(s, r.offers[s]));
+    Object.keys(r.frames).forEach(s => { const w = T.watch[s]; if (w) { w.frame = r.frames[s]; paintMedia(s); } });
+    checkPaused(); renderLive(); updateChatBadges();
+    if (T.tab === 'chat' && T.chatSid) refreshConv();
+  } catch (e) { if (/session has expired/i.test(e.message)) return signOut(e.message); }
+  const fast = T.tab === 'live' || T.tab === 'chat' || Object.keys(T.watch).length;
+  pollT = setTimeout(pollLoop, fast ? 2500 : 7000);
+}
+const sNow = () => Date.now() + T.offset;
+function timeLeft(s){ return s.status === 'paused' ? s.remainingMs : s.status === 'in_progress' ? s.endsAt - sNow() : 0; }
+const isGone = s => sNow() - (s.lastSeen || 0) > 25000;
+
+function checkPaused(){
+  const paused = T.sessions.filter(s => s.status === 'paused');
+  const fresh = paused.filter(s => !T.knownPaused.has(s.sid));
+  T.knownPaused = new Set(paused.map(s => s.sid));
+  $('#pausedAlert').hidden = !paused.length;
+  $('#pausedAlert').textContent = paused.length + ' paused';
+  document.title = (paused.length ? '(' + paused.length + ' paused) ' : '') + 'FGS Exam – Teacher Portal';
+  if (fresh.length) {
+    beep();
+    toast(fresh.map(s => s.name).join(', ') + ' paused: ' + fresh[0].pauseReason, true);
+    fresh.forEach(s => { if (!T.watch[s.sid]) watch(s.sid); });
+  }
+}
+function beep(){ try { const c = T.ac || (T.ac = new (window.AudioContext || window.webkitAudioContext)()); const o = c.createOscillator(), g = c.createGain(); o.frequency.value = 880; g.gain.value = .08; o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + .25); } catch (e) {} }
+
+/* ============================ live monitor ============================ */
+function statusPill(s){
+  if (isGone(s) && s.status !== 'submitted' && s.status !== 'cancelled') return '<span class="pill bad">Disconnected</span>';
+  return ({ in_progress: '<span class="pill info">In progress</span>', paused: '<span class="pill bad">Paused</span>', idle: '<span class="pill off">Not in a paper</span>',
+    submitted: '<span class="pill ok">Submitted</span>', cancelled: '<span class="pill bad">Cancelled</span>' })[s.status] || esc(s.status);
+}
+function visibleSessions(){
+  return T.sessions.filter(s => T.monGrade === 'all' || s.grade === T.monGrade)
+    .sort((a, b) => (b.status === 'paused') - (a.status === 'paused') || (a.status === 'submitted') - (b.status === 'submitted') || a.grade - b.grade || String(a.name).localeCompare(b.name));
+}
+function renderLive(){
+  const all = visibleSessions();
+  const c = { in_progress: 0, paused: 0, gone: 0, idle: 0, submitted: 0 };
+  all.forEach(s => { if (isGone(s) && s.status !== 'submitted' && s.status !== 'cancelled') c.gone++; else c[s.status] = (c[s.status] || 0) + 1; });
+  $('#counts').innerHTML = `<div><b>${all.length}</b><span>signed in</span></div><div><b>${c.in_progress}</b><span>in a paper</span></div>
+    <div><b style="color:var(--bad)">${c.paused}</b><span>paused</span></div><div><b>${c.gone}</b><span>disconnected</span></div>
+    <div><b>${c.idle}</b><span>on their papers page</span></div><div><b>${c.submitted}</b><span>submitted</span></div>`;
+  renderPausedQueue(all.filter(s => s.status === 'paused'));
+  const pages = Math.max(1, Math.ceil(all.length / T.perPage));
+  T.page = Math.min(T.page, pages - 1);
+  const shown = all.slice(T.page * T.perPage, (T.page + 1) * T.perPage);
+  const box = $('#tiles');
+  const want = new Set(shown.map(s => s.sid));
+  $$('#tiles .tile').forEach(el => { if (!want.has(el.dataset.sid)) el.remove(); });
+  if (!shown.length) box.innerHTML = '<p class="muted">No students are signed in yet. They appear here as soon as they sign in.</p>';
+  else if (box.querySelector('p.muted')) box.innerHTML = '';
+  shown.forEach((s, i) => {
+    let el = box.querySelector(`.tile[data-sid="${s.sid}"]`);
+    if (!el) {
+      el = document.createElement('div'); el.className = 'tile'; el.dataset.sid = s.sid;
+      el.innerHTML = `<div class="media"></div><div class="info"></div><div class="ctrl">
+        <button class="btn small" data-a="watch"></button><button class="btn small" data-a="sound">Sound on</button>
+        <button class="btn small" data-a="big">Enlarge</button><button class="btn small" data-a="msg">Message</button></div>`;
+      el.querySelector('[data-a=watch]').onclick = () => T.watch[s.sid] ? stopWatch(s.sid) : watch(s.sid);
+      el.querySelector('[data-a=sound]').onclick = e => toggleSound(s.sid, e.target);
+      el.querySelector('[data-a=big]').onclick = () => openBig(s.sid);
+      el.querySelector('[data-a=msg]').onclick = () => { setTab('chat'); openConv(s.sid); };
+    }
+    if (box.children[i] !== el) box.insertBefore(el, box.children[i] || null);
+    el.className = 'tile' + (s.status === 'paused' ? ' paused' : '') + (isGone(s) ? ' gone' : '');
+    el.querySelector('.info').innerHTML = `<b>${esc(s.name)}</b><span>Grade ${s.grade} | ${esc(s.adm)}</span>
+      <span>${statusPill(s)} ${s.module ? esc(MOD[s.module]) : ''}</span>
+      <span>${s.status === 'in_progress' || s.status === 'paused' ? 'Time left ' + fmt(timeLeft(s)) + ' | ' : ''}Violations ${s.violations}${s.escalated ? ' <span class="pill bad">Escalated</span>' : ''}</span>
+      ${!s.fs && s.status === 'in_progress' ? '<span class="pill warn">Not in full screen</span>' : ''}`;
+    el.querySelector('[data-a=watch]').textContent = T.watch[s.sid] ? 'Stop watching' : 'Watch';
+    const canWatch = !isGone(s) && s.status !== 'submitted' && s.status !== 'cancelled';
+    if ($('#autoWatch').checked && canWatch && !T.watch[s.sid]) watch(s.sid);
+    paintMedia(s.sid);
+  });
+  $('#pager').innerHTML = pages > 1 ? `<button class="btn small" id="pgPrev" ${T.page ? '' : 'disabled'}>Previous</button><span>Page ${T.page + 1} of ${pages}</span><button class="btn small" id="pgNext" ${T.page < pages - 1 ? '' : 'disabled'}>Next</button>` : '';
+  if ($('#pgPrev')) $('#pgPrev').onclick = () => { T.page--; Object.keys(T.watch).forEach(stopWatch); renderLive(); };
+  if ($('#pgNext')) $('#pgNext').onclick = () => { T.page++; Object.keys(T.watch).forEach(stopWatch); renderLive(); };
+}
+function renderPausedQueue(list){
+  $('#pausedPanel').hidden = !list.length;
+  const sig = list.map(s => s.sid + ':' + s.events.length).join('|');
+  if (sig !== T.pqSig) {
+    T.pqSig = sig;
+    $('#pausedList').innerHTML = list.map(s => `<div class="pq" data-sid="${s.sid}">
+      <div class="media" data-pqmedia="${s.sid}">Connecting…</div>
+      <div>
+        <div class="row"><b style="font-size:1.05rem">${esc(s.name)}</b><span>Grade ${s.grade} | ${esc(s.adm)} | ${esc(MOD[s.module] || '')}</span>
+          <span class="pill bad">${s.violations} violation${s.violations === 1 ? '' : 's'}</span>${s.escalated ? '<span class="pill bad">Escalated</span>' : ''}</div>
+        <div style="margin-top:.3rem"><b>Reason:</b> ${esc(s.pauseReason)} <span class="muted" data-pqtime></span></div>
+        <div class="events">${s.events.slice().reverse().map(ev => `<div>${new Date(ev.t).toLocaleTimeString()} – ${esc(ev.type)}${ev.detail ? ': ' + esc(ev.detail) : ''}</div>`).join('')}</div>
+        <div class="decide">
+          <input class="input msg" placeholder="Optional message shown to the student" maxlength="300">
+          <button class="btn ok" data-d="resume">Resume</button>
+          <input class="input pen" type="number" min="1" max="60" value="5" aria-label="Penalty minutes"><button class="btn" data-d="penalty">Resume with penalty (min)</button>
+          <button class="btn danger fill" data-d="cancel">Cancel test</button>
+        </div>
+      </div></div>`).join('');
+    $$('#pausedList .pq').forEach(row => {
+      const sid = row.dataset.sid;
+      row.querySelectorAll('[data-d]').forEach(b => b.onclick = async () => {
+        const action = b.dataset.d, msg = row.querySelector('.msg').value.trim(), pen = row.querySelector('.pen').value;
+        const s = T.sessions.find(x => x.sid === sid);
+        if (action === 'cancel' && !(await confirmBox('Cancel ' + (s ? s.name : '') + '\'s test?', 'The test will be marked "Cancelled – Malpractice". Completed papers are kept for the record. This cannot be undone here.', 'Cancel test'))) return;
+        await guard(async () => { await api('tDecide', sid, action, msg, pen); toast(action === 'cancel' ? 'Test cancelled' : 'Student allowed to continue'); }, 'Sending your decision…');
+      });
+    });
+  }
+  list.forEach(s => { const el = $(`.pq[data-sid="${s.sid}"] [data-pqtime]`); if (el) el.textContent = '(time left ' + fmt(timeLeft(s)) + ')'; paintMedia(s.sid); });
+}
+
+/* ============================ WebRTC viewing ============================ */
+async function watch(sid){
+  if (T.watch[sid]) return;
+  T.watch[sid] = { state: 'requesting', since: Date.now() };
+  try { const id = await call('tRtcRequest', [T.token, sid]); if (!T.watch[sid]) return; Object.assign(T.watch[sid], { id: id, state: 'connecting', since: Date.now() }); }
+  catch (e) { delete T.watch[sid]; }
+  setTimeout(() => { const w = T.watch[sid]; if (w && w.state === 'connecting' && Date.now() - w.since >= 19000) fallback(sid); }, 20000);
+  paintMedia(sid);
+}
+async function onOffer(sid, offer){
+  const w = T.watch[sid];
+  if (!w || w.pc || offer.id !== w.id) return;
+  const pc = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] });
+  w.pc = pc;
+  pc.ontrack = e => { w.stream = e.streams[0]; paintMedia(sid, true); };
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') { w.state = 'live'; paintMedia(sid, true); }
+    if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+      if (w.state === 'live') { stopWatch(sid); setTimeout(() => { const s = T.sessions.find(x => x.sid === sid); if (s && !isGone(s)) watch(sid); }, 3000); }
+      else if (pc.connectionState === 'failed') fallback(sid);
+    }
+  };
+  try {
+    await pc.setRemoteDescription(JSON.parse(offer.sdp));
+    await pc.setLocalDescription(await pc.createAnswer());
+    await new Promise(res => { if (pc.iceGatheringState === 'complete') return res(); const to = setTimeout(res, 3000); pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(to); res(); } }); });
+    await call('tRtcAnswer', [T.token, sid, offer.id, JSON.stringify(pc.localDescription)]);
+  } catch (e) { fallback(sid); }
+}
+function fallback(sid){
+  const w = T.watch[sid]; if (!w || w.state === 'live') return;
+  try { if (w.pc) w.pc.close(); } catch (e) {}
+  w.pc = null; w.stream = null; w.state = 'fallback'; paintMedia(sid, true);
+}
+function stopWatch(sid){
+  const w = T.watch[sid]; if (!w) return;
+  try { if (w.pc) w.pc.close(); } catch (e) {}
+  delete T.watch[sid]; paintMedia(sid, true);
+}
+function mediaHtml(sid, w){
+  if (!w) return '<span>Not watching</span>';
+  if (w.state === 'live' || w.stream) return `<video autoplay playsinline muted data-v="${sid}"></video><span class="tag">Live</span>`;
+  if (w.state === 'fallback') return w.frame ? `<img alt="" data-f="${sid}" src="${w.frame}"><span class="tag">Fallback view</span>` : '<span>Fallback view: waiting for picture…</span>';
+  return '<span>Connecting…</span>';
+}
+function paintMedia(sid, force){
+  const w = T.watch[sid];
+  const key = w ? (w.stream ? 'live' : w.state) + (w.state === 'fallback' && w.frame ? 'f' : '') : 'none';
+  $$(`.tile[data-sid="${sid}"] .media, [data-pqmedia="${sid}"], #bigMedia[data-sid="${sid}"]`).forEach(box => {
+    if (box.dataset.key !== key || force) {
+      box.dataset.key = key; box.innerHTML = mediaHtml(sid, w);
+      const v = box.querySelector('video'); if (v && w && w.stream) { v.srcObject = w.stream; v.muted = !w.sound; v.play().catch(() => {}); }
+    } else if (w && w.state === 'fallback' && w.frame) { const img = box.querySelector('img'); if (img && img.src !== w.frame) img.src = w.frame; }
+  });
+}
+function toggleSound(sid, btn){
+  const w = T.watch[sid]; if (!w || !w.stream) return toast('Start watching first.');
+  w.sound = !w.sound;
+  $$(`video[data-v="${sid}"]`).forEach(v => { v.muted = !w.sound; });
+  $$(`.tile[data-sid="${sid}"] [data-a=sound]`).forEach(b => b.textContent = w.sound ? 'Sound off' : 'Sound on');
+}
+function openBig(sid){
+  const s = T.sessions.find(x => x.sid === sid);
+  if (!T.watch[sid]) watch(sid);
+  $('#bigTitle').textContent = s ? `${s.name} (Grade ${s.grade}, ${s.adm})` : sid;
+  $('#bigMedia').dataset.sid = sid; $('#bigMedia').dataset.key = '';
+  $('#bigModal').hidden = false; paintMedia(sid, true);
+  $('#bigSound').onclick = () => toggleSound(sid);
+}
+$('#bigClose').onclick = () => { $('#bigModal').hidden = true; $('#bigMedia').innerHTML = ''; $('#bigMedia').dataset.sid = ''; };
+
+/* ============================ chat ============================ */
+function unreadOf(s){ return Math.max(0, (s.chatCount || 0) - (T.lastRead[s.sid] || 0)); }
+function updateChatBadges(){
+  const n = T.sessions.reduce((a, s) => a + unreadOf(s), 0);
+  $('#chatBadge').hidden = !n; $('#chatBadge').textContent = n;
+  if (T.tab === 'chat') renderChatList();
+}
+function renderChatList(){
+  const by = {};
+  T.sessions.forEach(s => (by[s.grade] = by[s.grade] || []).push(s));
+  $('#clist').innerHTML = Object.keys(by).sort((a, b) => a - b).map(g => `<div class="g">Grade ${g}</div>` + by[g].sort((a, b) => b.chatLastT - a.chatLastT).map(s =>
+    `<button data-sid="${s.sid}" class="${T.chatSid === s.sid ? 'cur' : ''}"><span>${esc(s.name)} <span class="muted">${esc(s.adm)}</span></span>${unreadOf(s) ? `<span class="badge">${unreadOf(s)}</span>` : ''}</button>`).join('')).join('')
+    || '<p class="muted" style="padding:.8rem">No students signed in.</p>';
+  $$('#clist button').forEach(b => b.onclick = () => openConv(b.dataset.sid));
+}
+async function openConv(sid){
+  T.chatSid = sid; T.chatLastT = -1;
+  const s = T.sessions.find(x => x.sid === sid);
+  $('#convHead').textContent = s ? `${s.name}, Grade ${s.grade}, ${s.adm}` : sid;
+  $('#convForm').hidden = false; $('#convMsgs').innerHTML = '';
+  await refreshConv(true); renderChatList(); $('#convText').focus();
+}
+async function refreshConv(force){
+  const s = T.sessions.find(x => x.sid === T.chatSid);
+  if (!force && s && s.chatLastT === T.chatLastT) return;
+  const list = await api('tGetChat', T.chatSid);
+  T.chatLastT = s ? s.chatLastT : 0;
+  if (s) T.lastRead[s.sid] = s.chatCount;
+  $('#convMsgs').innerHTML = list.map(m => `<div class="msg ${m.type === 'warning' ? 'warning' : m.from === 'teacher' ? 'me' : 'them'}">${m.type === 'warning' ? 'Warning: ' : ''}${esc(m.text)}${m.ack ? ' ✓ acknowledged' : ''}<time>${new Date(m.t).toLocaleTimeString()}</time></div>`).join('') || '<p class="muted">No messages yet.</p>';
+  $('#convMsgs').scrollTop = 1e6;
+  updateChatBadges();
+}
+$('#convForm').addEventListener('submit', async e => {
+  e.preventDefault(); const t = $('#convText').value.trim(); if (!t) return;
+  await guard(async () => { await api('tSendChat', T.chatSid, t, $('#convWarn').checked); $('#convText').value = ''; $('#convWarn').checked = false; await refreshConv(true); }, 'Sending…');
+});
+$('#bcForm').addEventListener('submit', async e => {
+  e.preventDefault(); const t = $('#bcText').value.trim(); if (!t) return;
+  await guard(async () => { await api('tBroadcast', $('#bcGrade').value, t, $('#bcWarn').checked); $('#bcText').value = ''; toast('Sent to ' + ($('#bcGrade').value === 'all' ? 'all grades' : 'Grade ' + $('#bcGrade').value)); }, 'Sending…');
+});
+
+/* ============================ paper ============================ */
+function renderPaper(){
+  const p = T.paper;
+  $('#pTitle').value = p.title; $('#pShow').checked = !!p.showAnswers; $('#pRetake').checked = !!p.allowRetake;
+  renderModTable();
+  $('#lPlays').value = String(p.modules.listening.playsPerPart || 2); $('#lGap').value = p.modules.listening.gapSeconds;
+  $('#wMin').value = p.modules.writing.minWords; $('#wMax').value = p.modules.writing.maxWords;
+  $('#edListening').innerHTML = keyEditor('listening', true);
+  $('#edReading').innerHTML = keyEditor('reading', false);
+  $('#saveMsg').textContent = '';
+}
+function renderModTable(){
+  const p = T.paper;
+  const durs = {}; $$('.dur').forEach(x => durs[x.dataset.m] = x.value);
+  $('#modTable').innerHTML = `<thead><tr><th>Paper</th><th>Status</th><th>Time (minutes)</th><th></th></tr></thead><tbody>` +
+    ['listening', 'reading', 'writing', 'speaking'].map(m => { const mod = p.modules[m], open = mod.status === 'OPEN';
+      return `<tr><td><b>${MOD[m]}</b></td><td>${open ? '<span class="pill ok">Open</span>' : '<span class="pill off">Closed</span>'}</td>
+      <td><input class="input dur" data-m="${m}" type="number" min="5" max="240" value="${mod.duration}" style="width:6rem"></td>
+      <td><button class="btn small" data-st="${m}">${open ? 'Close' : 'Open'} for Grade ${T.grade}</button> <button class="btn small" data-stall="${m}">${open ? 'Close' : 'Open'} for all grades</button></td></tr>`; }).join('') + '</tbody>';
+  $$('[data-st]').forEach(b => b.onclick = () => setStatus([T.grade], b.dataset.st));
+  $$('[data-stall]').forEach(b => b.onclick = () => setStatus(T.grades, b.dataset.stall));
+  $$('.dur').forEach(x => { if (durs[x.dataset.m] != null) x.value = durs[x.dataset.m]; });
+}
+async function setStatus(grades, m){
+  const next = T.paper.modules[m].status === 'OPEN' ? 'CLOSED' : 'OPEN';
+  await guard(async () => { await api('tSetModuleStatus', grades, m, next); T.paper.modules[m].status = next; renderModTable(); toast(MOD[m] + (next === 'OPEN' ? ' opened' : ' closed') + ' for ' + (grades.length > 1 ? 'all grades' : 'Grade ' + grades[0])); }, 'Updating…');
+}
+function keyEditor(m, listening){
+  return T.paper.modules[m].parts.map((pt, i) => `<details class="ed"><summary>Part ${pt.part}: ${esc(pt.title)} <span class="muted" style="font-weight:400">Questions ${pt.from}–${pt.to}, ${pt.marks} mark${pt.marks > 1 ? 's' : ''} each</span></summary><div class="inner">
+    <div class="grid4">
+      <div class="field"><label>Task name</label><input class="input" data-f="title" data-m="${m}" data-i="${i}" value="${esc(pt.title)}"></div>
+      <div class="field"><label>Marks per question</label><input class="input" type="number" min="1" max="4" data-f="marks" data-m="${m}" data-i="${i}" value="${pt.marks}"></div>
+      ${pt.type === 'choice' ? `<div class="field"><label>Answer letters</label><input class="input" data-f="options" data-m="${m}" data-i="${i}" value="${esc(pt.options)}"></div>` : '<div></div>'}
+      ${listening ? `<div class="field"><label>Reading time (seconds)</label><input class="input" type="number" min="0" max="180" data-f="readSeconds" data-m="${m}" data-i="${i}" value="${pt.readSeconds || 0}"></div>` : '<div></div>'}
+    </div>
+    <div class="field"><label>Instructions shown to students</label><textarea class="input" rows="2" data-f="instructions" data-m="${m}" data-i="${i}">${esc(pt.instructions)}</textarea></div>
+    <table class="t keyt"><thead><tr><th>Q</th><th>Correct answer</th>${pt.hints ? '<th>Word shown to students</th>' : ''}</tr></thead><tbody>
+    ${pt.keys.map((k, j) => `<tr><td>${pt.from + j}</td><td><input class="input" data-key="${m}" data-i="${i}" data-j="${j}" value="${esc(k)}"></td>${pt.hints ? `<td><input class="input" data-hint="${m}" data-i="${i}" data-j="${j}" value="${esc(pt.hints[j] || '')}"></td>` : ''}</tr>`).join('')}
+    </tbody></table></div></details>`).join('');
+}
+function collectPaper(){
+  const p = JSON.parse(JSON.stringify(T.paper));
+  p.title = $('#pTitle').value.trim() || p.title; p.showAnswers = $('#pShow').checked; p.allowRetake = $('#pRetake').checked;
+  $$('.dur').forEach(x => p.modules[x.dataset.m].duration = Math.max(5, Number(x.value) || p.modules[x.dataset.m].duration));
+  p.modules.listening.playsPerPart = Number($('#lPlays').value); p.modules.listening.gapSeconds = Math.max(0, Number($('#lGap').value) || 0);
+  p.modules.writing.minWords = Number($('#wMin').value) || 220; p.modules.writing.maxWords = Number($('#wMax').value) || 260;
+  $$('#tab-paper [data-f]').forEach(x => { const pt = p.modules[x.dataset.m].parts[x.dataset.i]; const f = x.dataset.f;
+    pt[f] = (f === 'marks' || f === 'readSeconds') ? Math.max(f === 'marks' ? 1 : 0, Number(x.value) || 0) : f === 'options' ? x.value.toUpperCase().replace(/[^A-Z]/g, '') : x.value.trim(); });
+  $$('[data-key]').forEach(x => { p.modules[x.dataset.key].parts[x.dataset.i].keys[x.dataset.j] = x.value.trim().toUpperCase(); });
+  $$('[data-hint]').forEach(x => { p.modules[x.dataset.hint].parts[x.dataset.i].hints[x.dataset.j] = x.value.trim().toUpperCase(); });
+  return p;
+}
+$('#savePaper').onclick = () => guard(async () => { const p = collectPaper(); await api('tSavePaper', T.grade, p); T.paper = Object.assign(p, { pageCounts: T.paper.pageCounts, audio: T.paper.audio }); $('#saveMsg').textContent = 'Saved at ' + new Date().toLocaleTimeString() + ' '; toast('Grade ' + T.grade + ' paper saved'); }, 'Saving…');
+$('#copyBtn').onclick = () => { const to = picked('#copyGrades'); if (!to.length) return toast('Choose at least one grade', true);
+  guard(async () => { await api('tSavePaper', T.grade, collectPaper()); await api('tCopyPaper', T.grade, to, $('#copyMedia').checked); toast('Copied to Grade ' + to.join(', ')); }, 'Copying…'); };
+
+/* ============================ question pages ============================ */
+function pageKeys(){
+  const p = T.paper, out = [];
+  ['listening', 'reading', 'writing'].forEach(m => p.modules[m].parts.forEach((pt, i) => out.push({ m: m, key: String(pt.part), label: MOD[m] + ', Part ' + pt.part, pages: pt.pages || '', ref: [m, 'parts', i] })));
+  p.modules.speaking.tasks.forEach((t, i) => out.push({ m: 'speaking', key: String(t.id), label: 'Speaking, ' + t.title, pages: t.pages || '', ref: ['speaking', 'tasks', i] }));
+  return out;
+}
+function renderPageStatus(){
+  const counts = T.paper.pageCounts || {};
+  $('#pageStatus').innerHTML = '<thead><tr><th>Paper and part</th><th>Pages</th><th></th></tr></thead><tbody>' + pageKeys().map(k => {
+    const n = counts[k.m + ':' + k.key] || 0;
+    return `<tr><td>${esc(k.label)}</td><td>${n ? n + ' page' + (n > 1 ? 's' : '') : '<span class="pill bad">Not added</span>'}</td><td>${n ? `<button class="btn small" data-prev="${k.m}:${k.key}">Preview</button>` : ''}</td></tr>`;
+  }).join('') + '</tbody>';
+  $$('[data-prev]').forEach(b => b.onclick = () => guard(async () => {
+    const [m, key] = b.dataset.prev.split(':');
+    const imgs = await api('tGetPages', T.grade, m, key);
+    $('#prevPanel').hidden = false; $('#prevTitle').textContent = 'Grade ' + T.grade + ': ' + b.closest('tr').firstChild.textContent + ' as students see it';
+    $('#prevImgs').innerHTML = imgs.map(s => `<img src="${s}" alt="" style="max-width:100%;border:1px solid var(--line);margin-bottom:.6rem">`).join('');
+    $('#prevPanel').scrollIntoView({ behavior: 'smooth' });
+  }, 'Loading pages…'));
+}
+function loadScript(src){ return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Could not load ' + src)); document.head.appendChild(s); }); }
+async function ensurePdfJs(){
+  if (window.pdfjsLib) return;
+  const base = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  await loadScript(base + 'pdf.min.js'); await loadScript(base + 'pdf.worker.min.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = base + 'pdf.worker.min.js';
+}
+async function renderPdfPage(n, canvas, targetH, targetW){
+  const page = await T.pdf.getPage(n);
+  const v1 = page.getViewport({ scale: 1 });
+  const vp = page.getViewport({ scale: targetW ? targetW / v1.width : targetH / v1.height });
+  canvas.width = Math.round(vp.width); canvas.height = Math.round(vp.height);
+  const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  await page.render({ canvasContext: ctx, viewport: vp }).promise;
+}
+$('#pdfFile').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  guard(async () => {
+    await ensurePdfJs();
+    T.pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
+    $('#pdfInfo').textContent = f.name + ': ' + T.pdf.numPages + ' pages';
+    $('#mapEd').innerHTML = ['listening', 'reading', 'writing', 'speaking'].map(m => `<h3 style="font-size:1rem;margin:1rem 0 .4rem">${MOD[m]}</h3><div class="map-grid">` +
+      pageKeys().filter(k => k.m === m).map((k, i) => `<div class="field"><label>${esc(k.label.replace(MOD[m] + ', ', ''))}</label><input class="input rng" data-m="${k.m}" data-k="${k.key}" value="${esc(k.pages)}" placeholder="e.g. 2-3 or 38,40"></div>`).join('') + '</div>').join('');
+    const th = $('#thumbs'); th.innerHTML = '';
+    $('#pdfSetup').hidden = false;
+    for (let i = 1; i <= T.pdf.numPages; i++) {
+      const fig = document.createElement('figure'), c = document.createElement('canvas');
+      fig.appendChild(c); fig.insertAdjacentHTML('beforeend', '<figcaption>Page ' + i + '</figcaption>'); th.appendChild(fig);
+      await renderPdfPage(i, c, 110);
+    }
+  }, 'Reading the PDF…');
+});
+function parseRange(s, max){
+  const out = [];
+  String(s).split(',').forEach(bit => { const m = bit.trim().match(/^(\d+)\s*(?:-\s*(\d+))?$/); if (!m) return; const a = +m[1], b = +(m[2] || m[1]);
+    for (let i = Math.min(a, b); i <= Math.max(a, b); i++) if (i >= 1 && i <= max) out.push(i); });
+  return out;
+}
+$('#upBtn').onclick = async () => {
+  const grades = picked('#upGrades'); if (!grades.length) return toast('Choose at least one grade', true);
+  const jobs = $$('.rng').map(x => ({ m: x.dataset.m, key: x.dataset.k, raw: x.value.trim(), pages: parseRange(x.value, T.pdf.numPages) })).filter(j => j.pages.length);
+  if (!jobs.length) return toast('Enter page numbers for at least one part', true);
+  const unique = Array.from(new Set([].concat(...jobs.map(j => j.pages)))).sort((a, b) => a - b);
+  const ids = {};
+  $('#upBtn').disabled = true; $('#upProg').hidden = false;
+  try {
+    for (let i = 0; i < unique.length; i++) {
+      $('#upMsg').textContent = `Uploading PDF page ${unique[i]} (${i + 1} of ${unique.length})…`;
+      const c = document.createElement('canvas'); await renderPdfPage(unique[i], c, null, 1400);
+      ids[unique[i]] = await api('tUploadPage', c.toDataURL('image/jpeg', .82), 'p' + unique[i]);
+      $('#upProg div').style.width = ((i + 1) / (unique.length + jobs.length) * 100) + '%';
+    }
+    for (let i = 0; i < jobs.length; i++) {
+      $('#upMsg').textContent = 'Linking pages to each part…';
+      await api('tSetPages', grades, jobs[i].m, jobs[i].key, jobs[i].pages.map(n => ids[n]));
+      $('#upProg div').style.width = ((unique.length + i + 1) / (unique.length + jobs.length) * 100) + '%';
+    }
+    // remember the page numbers in this grade's paper
+    const p = collectPaperQuiet();
+    jobs.forEach(j => { if (j.m === 'speaking') { const t = p.modules.speaking.tasks.find(x => String(x.id) === j.key); if (t) t.pages = j.raw; } else { const pt = p.modules[j.m].parts.find(x => String(x.part) === j.key); if (pt) pt.pages = j.raw; } });
+    await api('tSavePaper', T.grade, p);
+    T.paper = await api('tGetPaper', T.grade); renderPageStatus();
+    $('#upMsg').textContent = `Done. ${unique.length} pages uploaded and linked for Grade ${grades.join(', ')}.`;
+    toast('Question pages uploaded');
+  } catch (e) { $('#upMsg').textContent = 'Upload stopped: ' + e.message + ' Choose Upload pages to try again.'; }
+  $('#upBtn').disabled = false;
+};
+function collectPaperQuiet(){ const p = JSON.parse(JSON.stringify(T.paper)); delete p.pageCounts; delete p.audio; return p; }
+
+/* ============================ audio ============================ */
+function renderAudio(){
+  const a = T.paper.audio || {};
+  $('#audioRows').innerHTML = T.paper.modules.listening.parts.map(pt => {
+    const cur = a[pt.part];
+    return `<div class="panel" style="margin-bottom:.7rem"><div class="row"><b style="font-size:1.05rem">Part ${pt.part}: ${esc(pt.title)}</b>
+      ${cur ? `<span class="pill ok">${esc(cur.name)} (${(cur.size / 1048576).toFixed(1)} MB)</span><button class="btn small" data-play="${pt.part}">Preview</button>` : '<span class="pill bad">No audio</span>'}</div>
+      <div id="aud${pt.part}"></div>
+      <div class="row" style="margin-top:.6rem"><input type="file" accept="audio/*,.mp3" class="input" data-up="${pt.part}" style="max-width:320px">
+      <span class="muted">or</span><input class="input" placeholder="Paste a Google Drive link to an MP3" data-link="${pt.part}" style="max-width:340px"><button class="btn small" data-linkbtn="${pt.part}">Use this file</button></div>
+      <div class="progress" hidden data-prog="${pt.part}"><div></div></div></div>`;
+  }).join('');
+  $$('[data-up]').forEach(inp => inp.onchange = () => uploadAudio(inp.dataset.up, inp.files[0]));
+  $$('[data-linkbtn]').forEach(b => b.onclick = () => { const p = b.dataset.linkbtn, link = $(`[data-link="${p}"]`).value.trim(); const grades = picked('#auGrades');
+    if (!link || !grades.length) return toast('Paste a link and choose at least one grade', true);
+    guard(async () => { const info = await api('tLinkAudio', grades, p, link); toast('Linked ' + info.name); T.paper = await api('tGetPaper', T.grade); renderAudio(); }, 'Checking the Drive file…'); });
+  $$('[data-play]').forEach(b => b.onclick = () => previewAudio(b.dataset.play));
+}
+async function uploadAudio(part, file){
+  if (!file) return;
+  const grades = picked('#auGrades'); if (!grades.length) return toast('Choose at least one grade', true);
+  const CH = 2 * 1024 * 1024, n = Math.ceil(file.size / CH), ids = [];
+  const bar = $(`[data-prog="${part}"]`); bar.hidden = false;
+  try {
+    for (let i = 0; i < n; i++) {
+      const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file.slice(i * CH, (i + 1) * CH)); });
+      ids.push(await api('tUploadAudioChunk', part, i, dataUrl));
+      bar.firstChild.style.width = ((i + 1) / n * 100) + '%';
+    }
+    await api('tSetAudio', grades, part, ids, file.name, file.size, file.type || 'audio/mpeg');
+    toast('Part ' + part + ' audio uploaded'); T.paper = await api('tGetPaper', T.grade); renderAudio();
+  } catch (e) { toast('Upload failed: ' + e.message, true); bar.hidden = true; }
+}
+async function previewAudio(part){
+  await guard(async () => {
+    const first = await api('tGetAudioChunk', T.grade, part, 0);
+    const parts = [first];
+    for (let i = 1; i < first.chunks; i++) parts.push(await api('tGetAudioChunk', T.grade, part, i));
+    const blob = new Blob(parts.map(c => Uint8Array.from(atob(c.b64), ch => ch.charCodeAt(0))), { type: first.mime || 'audio/mpeg' });
+    $('#aud' + part).innerHTML = `<audio controls src="${URL.createObjectURL(blob)}" style="width:100%;margin-top:.5rem"></audio>`;
+  }, 'Loading audio…');
+}
+
+/* ============================ speaking setup ============================ */
+function renderSpeaking(){
+  const sp = T.paper.modules.speaking;
+  $('#spRe').value = sp.rerecords;
+  $('#spTasks').innerHTML = sp.tasks.map((t, i) => `<details class="ed" ${i === 0 ? 'open' : ''}><summary>${esc(t.title)} <span class="muted" style="font-weight:400">${t.prep} s preparation, ${t.speak} s speaking</span></summary><div class="inner">
+    <div class="grid4"><div class="field" style="grid-column:span 2"><label>Task title</label><input class="input" data-sp="title" data-i="${i}" value="${esc(t.title)}"></div>
+    <div class="field"><label>Preparation (seconds)</label><input class="input" type="number" min="0" max="300" data-sp="prep" data-i="${i}" value="${t.prep}"></div>
+    <div class="field"><label>Speaking (seconds)</label><input class="input" type="number" min="10" max="600" data-sp="speak" data-i="${i}" value="${t.speak}"></div></div>
+    <div class="field"><label>Instructions shown to students</label><textarea class="input" rows="2" data-sp="instructions" data-i="${i}">${esc(t.instructions)}</textarea></div>
+    <p class="muted" style="margin:0">Question paper pages: ${esc(t.pages || 'none')} (change them in Question pages)</p></div></details>`).join('');
+}
+$('#saveSpeaking').onclick = () => guard(async () => {
+  const p = collectPaperQuiet();
+  p.modules.speaking.rerecords = Math.max(0, Number($('#spRe').value) || 0);
+  $$('[data-sp]').forEach(x => { const t = p.modules.speaking.tasks[x.dataset.i], f = x.dataset.sp; t[f] = (f === 'prep' || f === 'speak') ? Math.max(0, Number(x.value) || 0) : x.value.trim(); });
+  await api('tSavePaper', T.grade, p); T.paper = Object.assign(p, { pageCounts: T.paper.pageCounts, audio: T.paper.audio }); renderSpeaking(); toast('Speaking tasks saved');
+}, 'Saving…');
+
+/* ============================ marking ============================ */
+async function loadMarking(){
+  await guard(async () => {
+    T.marks = await api('tEvalList', T.grade);
+    $('#markList').innerHTML = T.marks.length ? '<table class="t"><tbody>' + T.marks.map((x, i) => `<tr><td><b>${esc(x.name)}</b><br><span class="muted">${esc(x.adm)} | ${MOD[x.module]}</span></td>
+      <td>${x.evaluation ? `<span class="pill ok">${x.evaluation.total} / ${x.evaluation.max}</span>` : '<span class="pill warn">To mark</span>'}</td><td><button class="btn small" data-mk="${i}">Open</button></td></tr>`).join('') + '</tbody></table>'
+      : '<p class="muted">No Writing or Speaking papers submitted for Grade ' + T.grade + ' yet.</p>';
+    $$('[data-mk]').forEach(b => b.onclick = () => openMark(T.marks[b.dataset.mk]));
+  }, 'Loading submissions…');
+}
+$('#markRefresh').onclick = loadMarking;
+function rubricHtml(x){
+  const crit = T.rubric[x.module], ev = x.evaluation ? x.evaluation.scores : {};
+  const sets = x.module === 'writing' ? ['Part 1', 'Part 2'] : [''];
+  const opt = v => Array.from({ length: T.bandMax + 1 }, (_, n) => `<option ${Number(v) === n ? 'selected' : ''}>${n}</option>`).join('');
+  return sets.map(set => `${set ? `<h3 style="font-size:1rem;margin-top:.8rem">${set}</h3>` : ''}<div class="rub">` + crit.map(c => { const k = (set ? set + ': ' : '') + c;
+    return `<label>${esc(c)}</label><select class="input" data-crit="${esc(k)}" style="width:5rem">${opt(ev[k] == null ? 0 : ev[k])}</select>`; }).join('') + '</div>').join('');
+}
+function openMark(x){
+  let h = `<h2>${esc(x.name)} <span class="muted" style="font-size:1rem;font-weight:400">${esc(x.adm)} | Grade ${T.grade} | ${MOD[x.module]} | ${esc(x.time)}</span></h2>`;
+  if (x.module === 'writing') {
+    h += `<p><a href="${esc(x.links)}" target="_blank" rel="noopener">Open the Google Doc</a></p>
+      <h3 style="font-size:1rem">Part 1, Question 1 (${wc(x.answers.p1)} words)</h3><div class="essay-view">${esc(x.answers.p1) || '<span class="muted">No answer</span>'}</div>
+      <h3 style="font-size:1rem;margin-top:.8rem">Part 2, Question ${esc(x.answers.choice || '–')} (${wc(x.answers.p2)} words)</h3><div class="essay-view">${esc(x.answers.p2) || '<span class="muted">No answer</span>'}</div>`;
+  } else {
+    const recs = (x.answers.recordings || []);
+    h += recs.length ? recs.map(r => `<div class="row" style="margin:.4rem 0"><b style="min-width:6rem">Task ${esc(r.task)}</b><span data-rec="${esc(r.id)}"><button class="btn small" data-load="${esc(r.id)}">Load recording</button></span><a href="${esc(r.url)}" target="_blank" rel="noopener" class="muted">Drive</a></div>`).join('') : '<p class="muted">No recordings were submitted.</p>';
+  }
+  h += `<h3 style="font-size:1.05rem;margin-top:1rem">Marks (0 to ${T.bandMax} for each criterion)</h3>${rubricHtml(x)}
+    <div class="field"><label>Comment for the record</label><textarea class="input" id="mkComment" rows="2">${esc(x.evaluation ? x.evaluation.comment : '')}</textarea></div>
+    <button class="btn primary" id="mkSave">Save marks</button>`;
+  $('#markPanel').innerHTML = h;
+  $$('[data-load]').forEach(b => b.onclick = () => guard(async () => { const url = await api('tGetRecording', b.dataset.load); b.parentElement.innerHTML = `<audio controls src="${url}"></audio>`; fixDuration(document.querySelector(`[data-rec="${b.dataset.load}"] audio`)); }, 'Loading recording…'));
+  $('#mkSave').onclick = () => guard(async () => {
+    const scores = {}; $$('[data-crit]').forEach(s => scores[s.dataset.crit] = Number(s.value));
+    const r = await api('tSaveEvaluation', x.sid, x.module, scores, $('#mkComment').value);
+    toast('Saved: ' + r.total + ' / ' + r.max); await loadMarking();
+  }, 'Saving marks…');
+}
+
+/* ============================ responses ============================ */
+async function loadResponses(){
+  const g = T.respGrade || 'all';
+  $$('#respGrades .chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.g === g)));
+  await guard(async () => {
+    const r = await api('tGetResponses', g);
+    const rows = r.rows, A = r.analytics;
+    const ov = rows.map(x => Number(x.overall)).filter(n => !isNaN(n) && n !== 0);
+    $('#respStats').innerHTML = `<div><b>${rows.length}</b><span>students</span></div><div><b>${rows.filter(x => x.status === 'Submitted').length}</b><span>submitted</span></div>
+      <div><b>${rows.filter(x => String(x.status).indexOf('Cancelled') === 0).length}</b><span>cancelled</span></div>
+      <div><b>${A.listening.avgPct}%</b><span>Listening average</span></div><div><b>${A.reading.avgPct}%</b><span>Reading average</span></div>
+      <div><b>${ov.length ? Math.round(ov.reduce((a, b) => a + b, 0) / ov.length * 10) / 10 + '%' : '–'}</b><span>overall average</span></div>`;
+    $('#respTable').innerHTML = `<thead><tr><th>Name</th><th>Adm. no.</th><th>Grade</th><th>Listening</th><th>Reading</th><th>Writing</th><th>Speaking</th><th>Overall %</th><th>Status</th><th>Files</th><th></th></tr></thead><tbody>` +
+      (rows.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.adm)}</td><td>${x.grade}</td><td>${esc(x.listening)}</td><td>${esc(x.reading)}</td><td>${esc(x.writing)}</td><td>${esc(x.speaking)}</td>
+        <td><b>${esc(x.overall)}</b></td><td>${String(x.status).indexOf('Cancelled') === 0 ? `<span class="pill bad">${esc(x.status)}</span>` : x.status === 'Submitted' ? '<span class="pill ok">Submitted</span>' : `<span class="pill off">${esc(x.status)}</span>`}${x.evaluation === 'Pending' ? ' <span class="pill warn">Marking pending</span>' : ''}</td>
+        <td>${x.doc ? `<a href="${esc(x.doc)}" target="_blank" rel="noopener">Writing</a> ` : ''}${x.recs ? `<a href="${esc(String(x.recs).split('\n')[0])}" target="_blank" rel="noopener">Speaking</a>` : ''}</td>
+        <td><button class="btn small danger" data-reset="${esc(x.sid)}" data-name="${esc(x.name)}">Reset</button></td></tr>`).join('') || '<tr><td colspan="11" class="muted">No responses yet.</td></tr>') + '</tbody>';
+    $$('[data-reset]').forEach(b => b.onclick = async () => {
+      if (!(await confirmBox('Reset ' + b.dataset.name + '?', 'This deletes all of this student\'s saved papers, marks and session so they can take the test again. Drive files are kept.', 'Delete and reset'))) return;
+      await guard(async () => { await api('tResetStudent', b.dataset.sid); toast('Student reset'); loadResponses(); }, 'Resetting…');
+    });
+    $('#anaL').innerHTML = analysisHtml(A.listening); $('#anaR').innerHTML = analysisHtml(A.reading);
+  }, 'Loading responses…');
+}
+$('#respRefresh').onclick = loadResponses;
+function analysisHtml(a){
+  if (!a.count) return '<p class="muted">No completed papers yet.</p>';
+  const color = p => p >= 70 ? 'background:var(--ok-soft);color:var(--ok)' : p >= 40 ? 'background:var(--warn-soft);color:var(--warn)' : 'background:var(--bad-soft);color:var(--bad)';
+  return `<p class="muted">${a.count} papers, average ${a.avgPct}%</p>` +
+    a.parts.map(p => { const pct = p.possible ? Math.round(p.earned / p.possible * 100) : 0; return `<div class="bar"><span>Part ${p.part}: ${esc(p.title)}</span><div class="track"><div class="fill" style="width:${pct}%"></div></div><span>${pct}%</span></div>`; }).join('') +
+    `<h3 style="font-size:.95rem;margin:.9rem 0 .4rem">Question accuracy (lowest first shows the hardest)</h3><div class="qgrid">` +
+    a.questions.map(q => { const pct = q.possible ? Math.round(q.earned / q.possible * 100) : 0; return `<span class="qcell" style="${color(pct)}" title="Question ${q.q}: ${pct}%">Q${q.q}<br>${pct}%</span>`; }).join('') + '</div>';
+}
+</script>
+</body>
+</html>
